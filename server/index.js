@@ -1,15 +1,7 @@
-// Require the framework and instantiate it
-const fastify = require('fastify')({
-  logger: true
-})
-
-// Declare a route
-fastify.get('/', (request, reply) => {
-  reply.send({ hello: 'world' })
-})
-
+const buildFastify = require('./lib/build_fastify');
+const fastify = buildFastify();
 // Run the server!
 fastify.listen(3000, (err, address) => {
-  if (err) throw err
-  fastify.log.info(`server listening on ${address}`)
-})
+  if (err) throw err;
+  fastify.log.info(`server listening on ${address}`);
+});

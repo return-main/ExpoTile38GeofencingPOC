@@ -10,6 +10,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "fastify": "^2.12.0"
+    "fastify": "^2.12.0",
+    "fluent-schema": "^0.10.0",
+    "tile38": "^0.7.0"
   }
 }
