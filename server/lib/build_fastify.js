@@ -2,8 +2,10 @@ const Fastify = require('fastify');
 const {EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE} = require('./constants');
 const FluentSchema = require('fluent-schema');
 const addHelper = require('./add_helper');
+const getHelpers = require('./get_helpers');
 const Redis = require("redis");
 const util = require('util');
+const notifyHelpers = require('./notify_helpers');
 
 function buildFastify() {
   // Require the server framework and instantiate it
@@ -36,8 +38,9 @@ function buildFastify() {
     schema: {
       body: helpeeRouteBodySchema,
     },
-  }, (request, reply) => {
-    console.log('Request body', request.body);
+  }, async (request, reply) => {
+    const helpers = await getHelpers(send_command, request.body[LATITUDE], request.body[LONGITUDE]);
+    await notifyHelpers(helpers);
     reply.code(200).send();
   });
 

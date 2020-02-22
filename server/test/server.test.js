@@ -4,6 +4,8 @@ const Redis = require('redis');
 const util = require('util');
 const addHelper = require('../lib/add_helper');
 const getHelpers = require('../lib/get_helpers');
+const convertPushTokenListToMessageObject = require('../lib/convert_push_token_list_to_message_object');
+const notifyHelpers = require('../lib/notify_helpers');
 
 describe('server test', () => {
   const fastify = buildFastify();
@@ -109,5 +111,15 @@ describe('server test', () => {
     expect(helpers).toStrictEqual([]);
     done();
   });
+  test('convertPushTokenListToMessageObject', () => {
+    const helpers = ['ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]', 'ExponentPushToken[Xlno3HBWUEINRLg2gx0bMl]'];
+    const messageObject = convertPushTokenListToMessageObject(helpers);
+    expect(messageObject).toStrictEqual([{
+      'body': 'world',
+      'title': 'hello',
+      'to': 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]',
+    }, {'body': 'world', 'title': 'hello', 'to': 'ExponentPushToken[Xlno3HBWUEINRLg2gx0bMl]'}]);
+  });
+
 
 });

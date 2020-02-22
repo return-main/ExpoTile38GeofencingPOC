@@ -1,14 +1,9 @@
 const axios = require('axios')
-
-/// Takes a list of ExponentPushToken and converts them to a message object
-/// See: https://docs.expo.io/versions/latest/guides/push-notifications/
-function convertToMessageObject(helpers) {
-  return helpers.map(value => ({to: value, title: "hello", body: "world"}));
-}
+const convertPushTokenListToMessageObject = require('./convert_push_token_list_to_message_object');
 
 /// Takes a list of ExponentPushToken and sends push notifications to them
 async function notifyHelpers(helpers) {
-  const body = convertToMessageObject(helpers);
+  const body = convertPushTokenListToMessageObject(helpers);
   return await axios.post('https://exp.host/--/api/v2/push/send', body, {headers :{
       'Content-Type': 'application/json'
     }})
