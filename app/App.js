@@ -22,7 +22,7 @@ const sendHelper = async (token, latitude, longitude) => {
     headers: {
       'Content-Type': 'application/json',
     },
-    body: body,
+    body: JSON.stringify(body),
   }).then((response) => console.log('successfully sent helpers request: ', response.ok))
     .catch((error) => {
       console.log(error);
