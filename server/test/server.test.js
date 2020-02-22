@@ -129,7 +129,7 @@ describe('server test', () => {
       'to': 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]',
     }, {'body': 'world', 'title': 'hello', 'to': 'ExponentPushToken[Xlno3HBWUEINRLg2gx0bMl]'}]);
   });
-  test('notifyHelpers', () => {
+  test('notifyHelpers', (done) => {
     moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
       status: 200,
     });
@@ -137,7 +137,9 @@ describe('server test', () => {
     const helpers = ['ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]', 'ExponentPushToken[Xlno3HBWUEINRLg2gx0bMl]'];
     notifyHelpers(helpers).then(onFulfilled);
     moxios.wait(function () {
-      equal(onFulfilled.called, true);
+      expect(onFulfilled.called).toBe(true);
+      expect(JSON.parse(onFulfilled.getCall(0).args[0].config.data)).toStrictEqual(convertPushTokenListToMessageObject(helpers));
+      expect(onFulfilled.getCall(0).args[0].config.headers['Content-Type']).toBe('application/json');
       done();
     });
   });
