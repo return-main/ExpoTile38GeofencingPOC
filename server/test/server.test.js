@@ -3,6 +3,7 @@ const {HELPERS} = require('../lib/constants');
 const Redis = require('redis');
 const util = require('util');
 const addHelper = require('../lib/add_helper');
+const getHelpers = require('../lib/get_helpers');
 
 describe('server test', () => {
   const fastify = buildFastify();
@@ -39,18 +40,16 @@ describe('server test', () => {
     send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
       expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]});
       done();
-    })
+    });
   });
   test('addHelpers function', async (done) => {
     const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
     const latitude = 48.81903;
     const longitude = 2.41197;
-    addHelper(send_command, exponentPushToken, latitude, longitude).then(() => {
-      send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
-        expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [longitude, latitude]});
-        done();
-      })
-    });
+    await addHelper(send_command, exponentPushToken, latitude, longitude);
+    const reply = await send_command('GET', [HELPERS, exponentPushToken]);
+    expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [longitude, latitude]});
+    done();
   });
   test('Sending weird stuff to /helpers', async (done) => {
     const body = {
@@ -77,6 +76,15 @@ describe('server test', () => {
       body: body,
     });
     expect(response.statusCode).toBe(400);
+    done();
+  });
+  test('getHelpers function', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
+    const latitude = 48.81903;
+    const longitude = 2.41197;
+    await addHelper(send_command, exponentPushToken, latitude, longitude);
+    const helpers = getHelpers(send_command, latitude, longitude);
+    expect(helpers).toBe(true);
     done();
   });
 });
