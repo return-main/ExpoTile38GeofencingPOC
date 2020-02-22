@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "author": "",
   "license": "ISC",
@@ -13,5 +13,8 @@
     "fastify": "^2.12.0",
     "fluent-schema": "^0.10.0",
     "tile38": "^0.7.0"
+  },
+  "devDependencies": {
+    "jest": "^25.1.0"
   }
 }
