@@ -2,13 +2,14 @@ const buildFastify = require('../lib/build_fastify');
 const {HELPERS} = require('../lib/constants');
 const Redis = require('redis');
 const util = require('util');
+const addHelper = require('../lib/add_helper');
 
 describe('server test', () => {
   const fastify = buildFastify();
   const tile38Client = Redis.createClient(9851, 'localhost');
   const send_command = util.promisify(tile38Client.send_command).bind(tile38Client);
 
-  afterEach(async () => send_command('DROP', [HELPERS]))
+  afterEach(async () => send_command('DROP', [HELPERS]));
 
   afterAll(async () => {
     await fastify.close();
@@ -22,7 +23,7 @@ describe('server test', () => {
     expect(response.statusCode).toBe(404);
     done();
   });
-  test('adding a helper', async (done) => {
+  test('Adding a helper using the route /helpers', async (done) => {
     const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
     const body = {
       exponentPushToken,
@@ -35,17 +36,21 @@ describe('server test', () => {
       body: body,
     });
     expect(response.statusCode).toBe(200);
-    tile38Client.send_command('GET', [HELPERS, exponentPushToken],
-      function(err, reply){
-        if (err){
-          expect(false).toBe(true);
-        }else{
-          expect(JSON.parse(reply)).toStrictEqual({"type":"Point","coordinates":[2.41197,48.81903]});
-          done();
-        }
-      }
-    );
-
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+      expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]});
+      done();
+    })
+  });
+  test('addHelpers function', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
+    const latitude = 48.81903;
+    const longitude = 2.41197;
+    addHelper(send_command, exponentPushToken, latitude, longitude).then(() => {
+      send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+        expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [longitude, latitude]});
+        done();
+      })
+    });
   });
   test('Sending weird stuff to /helpers', async (done) => {
     const body = {
