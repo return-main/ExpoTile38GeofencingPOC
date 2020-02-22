@@ -83,8 +83,8 @@ describe('server test', () => {
     const latitude = 48.81903;
     const longitude = 2.41197;
     await addHelper(send_command, exponentPushToken, latitude, longitude);
-    const helpers = getHelpers(send_command, latitude, longitude);
-    expect(helpers).toBe(true);
+    const helpers = await getHelpers(send_command, latitude, longitude);
+    expect(helpers).toStrictEqual(['ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]']);
     done();
   });
 });
