@@ -12,8 +12,7 @@
   "dependencies": {
     "fastify": "^2.12.0",
     "fluent-schema": "^0.10.0",
-    "redis": "^3.0.2",
-    "tile38": "^0.7.0"
+    "redis": "^3.0.2"
   },
   "devDependencies": {
     "jest": "^25.1.0"

@@ -1,5 +1,4 @@
 const Fastify = require('fastify');
-const Tile38 = require('tile38');
 const {EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE} = require('./constants');
 const FluentSchema = require('fluent-schema');
 const addHelper = require('./add_helper');
