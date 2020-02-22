@@ -1,10 +1,10 @@
 const buildFastify = require('../lib/build_fastify');
-const Tile38 = require('tile38');
 const {HELPERS} = require('../lib/constants');
+const Redis = require('redis');
 
 describe('server test', () => {
   const fastify = buildFastify();
-  const tile38Client = new Tile38({debug: true});
+  const tile38Client = Redis.createClient(9851, 'localhost');
 
   afterAll(async () => {
     await fastify.close();
@@ -20,8 +20,9 @@ describe('server test', () => {
     done();
   });
   test('adding a helper', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
     const body = {
-      'exponentPushToken': 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]',
+      exponentPushToken,
       'latitude': 48.81903,
       'longitude': 2.41197,
     };
@@ -31,12 +32,16 @@ describe('server test', () => {
       body: body,
     });
     expect(response.statusCode).toBe(200);
-    tile38Client.scanQuery(HELPERS).then(
-      (helpers) => {
-        expect(helpers).toBe(200);
-        done();
+    tile38Client.send_command('GET', [HELPERS, exponentPushToken],
+      function(err, reply){
+        if (err){
+          expect(false).toBe(true);
+        }else{
+          expect(JSON.parse(reply)).toStrictEqual({"type":"Point","coordinates":[2.41197,48.81903]});
+          done();
+        }
       }
-    )
+    );
 
   });
   test('Sending weird stuff to /helpers', async (done) => {

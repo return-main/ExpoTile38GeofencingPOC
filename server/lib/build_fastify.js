@@ -3,14 +3,14 @@ const Tile38 = require('tile38');
 const {EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE} = require('./constants');
 const FluentSchema = require('fluent-schema');
 const addHelper = require('./add_helper');
+const Redis = require("redis");
 
 function buildFastify() {
   // Require the server framework and instantiate it
   const fastify = Fastify({
     logger: true,
   });
-  // A redis client custom built for Tile38
-  const tile38client = new Tile38({debug: true });
+  const tile38client = Redis.createClient(9851, "localhost");
 
   const helpersRouteBodySchema = FluentSchema.object()
     .prop(EXPONENT_PUSH_TOKEN, FluentSchema.string()).required()
