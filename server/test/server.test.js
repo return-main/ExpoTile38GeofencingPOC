@@ -78,13 +78,35 @@ describe('server test', () => {
     expect(response.statusCode).toBe(400);
     done();
   });
-  test('getHelpers function', async (done) => {
+  test('getHelpers function on same position', async (done) => {
     const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
     const latitude = 48.81903;
     const longitude = 2.41197;
     await addHelper(send_command, exponentPushToken, latitude, longitude);
     const helpers = await getHelpers(send_command, latitude, longitude);
     expect(helpers).toStrictEqual(['ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]']);
+    done();
+  });
+  test('getHelpers function on close position', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
+    const latitude = 48.81903;
+    const longitude = 2.41197;
+    await addHelper(send_command, exponentPushToken, latitude, longitude);
+    // It's about 500 meters away
+    var helpers = await getHelpers(send_command, 48.81697, 2.40658);
+    expect(helpers).toStrictEqual(['ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]']);
+    // 400 meters is too short
+    helpers = await getHelpers(send_command, 48.81697, 2.40658, 400);
+    expect(helpers).toStrictEqual([]);
+    done();
+  });
+  test('getHelpers function too far', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
+    const latitude = 48.81903;
+    const longitude = 2.41197;
+    await addHelper(send_command, exponentPushToken, latitude, longitude);
+    const helpers = await getHelpers(send_command, 12.11111, longitude);
+    expect(helpers).toStrictEqual([]);
     done();
   });
 });
