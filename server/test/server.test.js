@@ -143,5 +143,79 @@ describe('server test', () => {
       done();
     });
   });
+  test('e2e /helpers + /helpee', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
+    const body = {
+      exponentPushToken,
+      latitude: 48.81903,
+      longitude: 2.41197,
+    };
+    var response = await fastify.inject({
+      method: 'POST',
+      url: '/helpers',
+      body: body,
+    });
+    expect(response.statusCode).toBe(200);
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+      expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]});
+    });
 
+    /// Ask for help less than 500 meters away
+    moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
+      status: 200,
+    });
+    response = await fastify.inject({
+      method: 'POST',
+      url: '/helpee',
+      body: {
+        latitude: 48.81697,
+        longitude: 2.40658,
+      },
+    });
+    expect(response.statusCode).toBe(200);
+    moxios.wait(function () {
+      const request = moxios.requests.mostRecent();
+      expect(JSON.parse(request.config.data)).toStrictEqual(convertPushTokenListToMessageObject([exponentPushToken]));
+      expect(request.config.headers['Content-Type']).toBe('application/json');
+      done();
+    });
+  });
+  test('e2e /helpers + /helpee too far away', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
+    const body = {
+      exponentPushToken,
+      latitude: 48.81903,
+      longitude: 2.41197,
+    };
+    var response = await fastify.inject({
+      method: 'POST',
+      url: '/helpers',
+      body: body,
+    });
+    expect(response.statusCode).toBe(200);
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+      expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]});
+    });
+
+    /// Ask for help more than 500 meters away
+    moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
+      status: 200,
+    });
+    response = await fastify.inject({
+      method: 'POST',
+      url: '/helpee',
+      body: {
+        latitude: 48.8584,
+        longitude: 2.2945,
+      },
+    });
+    expect(response.statusCode).toBe(200);
+    moxios.wait(function () {
+      const request = moxios.requests.mostRecent();
+      // notifies 0 people
+      expect(JSON.parse(request.config.data)).toStrictEqual([]);
+      expect(request.config.headers['Content-Type']).toBe('application/json');
+      done();
+    });
+  });
 });

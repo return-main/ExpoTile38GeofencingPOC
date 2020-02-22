@@ -12,3 +12,4 @@
 - [ ] Find a way to visualise Tile38
 - [ ] Dockerize everything
 - [ ] Better error codes
+- [ ] Don't send empty requests to expo
