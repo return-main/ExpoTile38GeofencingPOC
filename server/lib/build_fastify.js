@@ -3,13 +3,15 @@ const {EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE} = require('./constants');
 const FluentSchema = require('fluent-schema');
 const addHelper = require('./add_helper');
 const Redis = require("redis");
+const util = require('util');
 
 function buildFastify() {
   // Require the server framework and instantiate it
   const fastify = Fastify({
     logger: true,
   });
-  const tile38client = Redis.createClient(9851, "localhost");
+  const tile38Client = Redis.createClient(9851, "localhost");
+  const send_command = util.promisify(tile38Client.send_command).bind(tile38Client);
 
   const helpersRouteBodySchema = FluentSchema.object()
     .prop(EXPONENT_PUSH_TOKEN, FluentSchema.string()).required()
@@ -22,7 +24,7 @@ function buildFastify() {
     },
   }, async (request, reply) => {
     console.log('Adding helper', request.body);
-    await addHelper(tile38client, request.body[EXPONENT_PUSH_TOKEN], request.body[LATITUDE], request.body[LONGITUDE]);
+    await addHelper(send_command, request.body[EXPONENT_PUSH_TOKEN], request.body[LATITUDE], request.body[LONGITUDE]);
     reply.code(200).send();
   });
 

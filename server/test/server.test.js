@@ -1,14 +1,17 @@
 const buildFastify = require('../lib/build_fastify');
 const {HELPERS} = require('../lib/constants');
 const Redis = require('redis');
+const util = require('util');
 
 describe('server test', () => {
   const fastify = buildFastify();
   const tile38Client = Redis.createClient(9851, 'localhost');
+  const send_command = util.promisify(tile38Client.send_command).bind(tile38Client);
+
+  afterEach(async () => send_command('DROP', [HELPERS]))
 
   afterAll(async () => {
     await fastify.close();
-    //await tile38Client.drop(HELPERS);
   });
 
   test('404 on unknown route', async (done) => {
