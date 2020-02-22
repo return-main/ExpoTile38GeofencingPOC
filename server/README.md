@@ -7,6 +7,7 @@
 
 #TODO:
 - [ ] Test /helpee
+- [ ] Make a diagram to explain what's happening
 - [ ] Add data field to notifications with the position of the helpee
 - [ ] Find a way to visualise Tile38
 - [ ] Dockerize everything

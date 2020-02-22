@@ -6,13 +6,22 @@ const addHelper = require('../lib/add_helper');
 const getHelpers = require('../lib/get_helpers');
 const convertPushTokenListToMessageObject = require('../lib/convert_push_token_list_to_message_object');
 const notifyHelpers = require('../lib/notify_helpers');
+const moxios = require('moxios');
+const sinon = require('sinon');
 
 describe('server test', () => {
   const fastify = buildFastify();
   const tile38Client = Redis.createClient(9851, 'localhost');
   const send_command = util.promisify(tile38Client.send_command).bind(tile38Client);
 
-  afterEach(async () => send_command('DROP', [HELPERS]));
+  beforeEach(function () {
+    moxios.install();
+  });
+
+  afterEach(async () => {
+    moxios.uninstall();
+    await send_command('DROP', [HELPERS]);
+  });
 
   afterAll(async () => {
     await fastify.close();
@@ -120,6 +129,17 @@ describe('server test', () => {
       'to': 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]',
     }, {'body': 'world', 'title': 'hello', 'to': 'ExponentPushToken[Xlno3HBWUEINRLg2gx0bMl]'}]);
   });
-
+  test('notifyHelpers', () => {
+    moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
+      status: 200,
+    });
+    let onFulfilled = sinon.spy();
+    const helpers = ['ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]', 'ExponentPushToken[Xlno3HBWUEINRLg2gx0bMl]'];
+    notifyHelpers(helpers).then(onFulfilled);
+    moxios.wait(function () {
+      equal(onFulfilled.called, true);
+      done();
+    });
+  });
 
 });
