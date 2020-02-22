@@ -114,6 +114,32 @@ export default class AppContainer extends React.Component {
     console.log(`Status & Response ID-> ${data}`);
   };
 
+  requestHelp = async () => {
+    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    if (status !== 'granted') {
+      this.setState({
+        errorMessage: 'Permission to access location was denied',
+      });
+    }
+    let location = await Location.getCurrentPositionAsync({});
+    console.log("location" + location.coords)
+    const body = {
+      latitude: location.coords.latitude,
+      longitude: location.coords.longitude,
+    };
+    console.log('Sending locations to /helpee', body);
+    return await fetch('http://192.168.0.11:3000/helpee', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    }).then((response) => console.log('successfully sent helpee request: ', response.ok))
+      .catch((error) => {
+        console.log(error);
+      });
+  }
+
   render() {
     return (
       <View
@@ -126,6 +152,10 @@ export default class AppContainer extends React.Component {
           <Text>Origin: {this.state.notification.origin}</Text>
           <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
         </View>
+        <Button
+          title={'Request help at 500 meters'}
+          onPress={() => this.requestHelp()}
+        />
         <Button
           title={'Press to Send Notification'}
           onPress={() => this.sendPushNotification()}
