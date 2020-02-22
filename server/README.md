@@ -1,3 +1,14 @@
+#Explanation
+![Explanation](Tile38.png?raw=true "How it works")
+
+#How to start
+- start the tile38 database (a bash script is provided)
+- start the server
+```bash
+./tile38_docker.sh &
+yarn start
+```
+
 #Tile38 Commands:
 - https://tile38.com/commands/set/
 - https://tile38.com/commands/expire/
@@ -6,7 +17,6 @@
 - https://docs.expo.io/versions/latest/guides/push-notifications/
 
 #TODO:
-- [ ] Test /helpee
 - [ ] Make a diagram to explain what's happening
 - [ ] Add data field to notifications with the position of the helpee
 - [ ] Find a way to visualise Tile38
