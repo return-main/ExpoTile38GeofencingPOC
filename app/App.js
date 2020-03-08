@@ -1,20 +1,19 @@
 import React from 'react';
 import {Button, Text, View} from 'react-native';
 import {Notifications} from 'expo';
-import * as Permissions from 'expo-permissions';
-import * as Location from 'expo-location';
+import {askAsync, getAsync, LOCATION, NOTIFICATIONS} from 'expo-permissions';
+import {Accuracy, getCurrentPositionAsync, startLocationUpdatesAsync} from 'expo-location';
 import Constants from 'expo-constants';
+import {defineTask} from 'expo-task-manager';
 
 let YOUR_PUSH_TOKEN = '';
 const SENDING_POSITION_TASK_NAME = 'HELPER';
 
-import * as TaskManager from 'expo-task-manager';
-
 const sendHelper = async (token, latitude, longitude) => {
   const body = {
     exponentPushToken: token,
-    latitude: latitude,
-    longitude: longitude,
+    latitude,
+    longitude,
   };
   console.log('Sending locations to /helpers', body);
   return await fetch('http://192.168.0.11:3000/helpers', {
@@ -29,7 +28,7 @@ const sendHelper = async (token, latitude, longitude) => {
     });
 };
 
-TaskManager.defineTask(SENDING_POSITION_TASK_NAME, ({data: {locations}, error}) => {
+defineTask(SENDING_POSITION_TASK_NAME, ({data: {locations}, error}) => {
   if (error) {
     // check `error.message` for more details.
     console.error(error);
@@ -42,20 +41,20 @@ TaskManager.defineTask(SENDING_POSITION_TASK_NAME, ({data: {locations}, error}) 
   sendHelper(YOUR_PUSH_TOKEN, latitude, longitude);
 });
 
-export default class AppContainer extends React.Component {
+export default class App extends React.Component {
   state = {
     notification: {},
   };
 
   registerForPushNotificationsAsync = async () => {
     if (Constants.isDevice) {
-      const {status: existingStatus} = await Permissions.getAsync(
-        Permissions.NOTIFICATIONS,
+      const {status: existingStatus} = await getAsync(
+        NOTIFICATIONS,
       );
       let finalStatus = existingStatus;
       if (existingStatus !== 'granted') {
-        const {status} = await Permissions.askAsync(
-          Permissions.NOTIFICATIONS,
+        const {status} = await askAsync(
+          NOTIFICATIONS,
         );
         finalStatus = status;
       }
@@ -89,7 +88,7 @@ export default class AppContainer extends React.Component {
   _handleNotification = notification => {
     const callback = (state) => console.log('State changed:' + JSON.stringify(state));
     callback(this.state);
-    this.setState({notification: notification}, callback);
+    this.setState({notification}, callback);
   };
 
   // Can use this function below, OR use Expo's Push Notification Tool-> https://expo.io/dashboard/notifications
@@ -115,13 +114,13 @@ export default class AppContainer extends React.Component {
   };
 
   requestHelp = async () => {
-    let { status } = await Permissions.askAsync(Permissions.LOCATION);
+    const {status} = await askAsync(LOCATION);
     if (status !== 'granted') {
       this.setState({
         errorMessage: 'Permission to access location was denied',
       });
     }
-    let location = await Location.getCurrentPositionAsync({});
+    const location = await getCurrentPositionAsync({});
     console.log("location" + location.coords)
     const body = {
       latitude: location.coords.latitude,
@@ -165,8 +164,8 @@ export default class AppContainer extends React.Component {
   }
 
   startSendingPosition() {
-    Location.startLocationUpdatesAsync(SENDING_POSITION_TASK_NAME, {
-      accuracy: Location.Accuracy.BestForNavigation,
+    startLocationUpdatesAsync(SENDING_POSITION_TASK_NAME, {
+      accuracy: Accuracy.BestForNavigation,
     });
   }
 }
