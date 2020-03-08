@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Text, View} from 'react-native';
+import {Button, StyleSheet, Text, View} from 'react-native';
 import {Notifications} from 'expo';
 import {askAsync, getAsync, LOCATION, NOTIFICATIONS} from 'expo-permissions';
 import {Accuracy, getCurrentPositionAsync, startLocationUpdatesAsync} from 'expo-location';
@@ -41,6 +41,15 @@ defineTask(SENDING_POSITION_TASK_NAME, ({data: {locations}, error}) => {
   sendHelper(YOUR_PUSH_TOKEN, latitude, longitude);
 });
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'space-around',
+  },
+  notification: {alignItems: 'center', justifyContent: 'center'},
+});
+
 export default class App extends React.Component {
   state = {
     notification: {},
@@ -59,12 +68,14 @@ export default class App extends React.Component {
         finalStatus = status;
       }
       if (finalStatus !== 'granted') {
+        // eslint-disable-next-line no-alert
         alert('Failed to get push token for push notification!');
         return;
       }
       YOUR_PUSH_TOKEN = await Notifications.getExpoPushTokenAsync();
       console.log(YOUR_PUSH_TOKEN);
     } else {
+      // eslint-disable-next-line no-alert
       alert('Must use physical device for Push Notifications');
     }
   };
@@ -87,7 +98,9 @@ export default class App extends React.Component {
 
   _handleNotification = notification => {
     const callback = (state) => console.log('State changed:' + JSON.stringify(state));
+    // eslint-disable-next-line no-invalid-this
     callback(this.state);
+    // eslint-disable-next-line no-invalid-this
     this.setState({notification}, callback);
   };
 
@@ -116,12 +129,13 @@ export default class App extends React.Component {
   requestHelp = async () => {
     const {status} = await askAsync(LOCATION);
     if (status !== 'granted') {
+      // eslint-disable-next-line no-invalid-this
       this.setState({
         errorMessage: 'Permission to access location was denied',
       });
     }
     const location = await getCurrentPositionAsync({});
-    console.log("location" + location.coords)
+    console.log('location' + location.coords);
     const body = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
@@ -137,17 +151,13 @@ export default class App extends React.Component {
       .catch((error) => {
         console.log(error);
       });
-  }
+  };
 
   render() {
     return (
       <View
-        style={{
-          flex: 1,
-          alignItems: 'center',
-          justifyContent: 'space-around',
-        }}>
-        <View style={{alignItems: 'center', justifyContent: 'center'}}>
+        style={styles.container}>
+        <View style={styles.notification}>
           <Text>Origin: {this.state.notification.origin}</Text>
           <Text>Data: {JSON.stringify(this.state.notification.data)}</Text>
         </View>
@@ -163,9 +173,9 @@ export default class App extends React.Component {
     );
   }
 
-  startSendingPosition() {
+  startSendingPosition = () => {
     startLocationUpdatesAsync(SENDING_POSITION_TASK_NAME, {
       accuracy: Accuracy.BestForNavigation,
     });
-  }
+  };
 }
