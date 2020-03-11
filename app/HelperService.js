@@ -1,6 +1,6 @@
 import Constants from 'expo-constants';
 import {askAsync, getAsync, LOCATION, NOTIFICATIONS} from 'expo-permissions';
-import {Notifications} from 'expo';
+import {Notifications, Linking} from 'expo';
 import {defineTask} from 'expo-task-manager';
 import {
   Accuracy,
@@ -23,9 +23,34 @@ class HelperService {
   constructor() {
     if (!HelperService.instance) {
       this._defineTask();
+      HelperService._addNotificationListener();
       HelperService.instance = this;
     }
     return HelperService.instance;
+  }
+
+  // Creates a geo URL from received notification data and opens it with the default map app
+  // Like Google Maps or Baidu Maps
+  // Handle notifications that are received or selected while the app
+  // is open. If the app was closed and then opened by tapping the
+  // notification (rather than just tapping the app icon to open it),
+  // this function will fire on the next tick after the app starts
+  // with the notification data.
+  static _addNotificationListener() {
+    return Notifications.addListener(notification => {
+      if (notification.data.latitude && notification.data.longitude) {
+        const url = 'geo:' + notification.data.latitude + ',' + notification.data.longitude;
+        Linking.canOpenURL(url)
+          .then((supported) => {
+            if (!supported) {
+              console.log('Can\'t handle url: ' + url);
+            } else {
+              return Linking.openURL(url);
+            }
+          })
+          .catch((err) => console.error('An error occurred', err));
+      }
+    });
   }
 
   static async _sendHelper(token, latitude, longitude) {
