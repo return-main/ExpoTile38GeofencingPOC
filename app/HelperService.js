@@ -16,7 +16,7 @@ import {HELP_API_URL} from './env';
 /// canBeStarted() to check if the conditions are met to start sending
 class HelperService {
   static _HELPER_TASK_NAME = 'HELPER_TASK';
-  _PUSH_TOKEN = '';
+  _pushToken = '';
 
   /// Singleton pattern to force _defineTask() call
   constructor() {
@@ -79,16 +79,17 @@ class HelperService {
         console.error(error);
         return;
       }
-      if (this._PUSH_TOKEN === '') {
+      if (this._pushToken === '') {
         console.log('push token is not set, skipping');
+        return;
       }
       const {latitude, longitude} = locations[0].coords;
-      HelperService._sendHelper(this._PUSH_TOKEN, latitude, longitude);
+      HelperService._sendHelper(this._pushToken, latitude, longitude);
     });
   }
 
   async _registerForPushNotificationsAsync() {
-    if (this._PUSH_TOKEN !== '') {
+    if (this._pushToken !== '') {
       return;
     }
     if (Constants.isDevice) {
@@ -106,8 +107,8 @@ class HelperService {
         console.log('Failed to get push token for push notification!');
         return;
       }
-      this.PUSH_TOKEN = await Notifications.getExpoPushTokenAsync();
-      console.log('PUSH_TOKEN' + this.PUSH_TOKEN);
+      this._pushToken = await Notifications.getExpoPushTokenAsync();
+      console.log('PUSH_TOKEN: ' + this._pushToken);
     } else {
       console.log('Must use physical device for Push Notifications');
     }
@@ -119,6 +120,9 @@ class HelperService {
   }
   async start() {
     await this._registerForPushNotificationsAsync();
+    if (this._pushToken === '') {
+      return;
+    }
     await startLocationUpdatesAsync(HelperService._HELPER_TASK_NAME, {
       accuracy: Accuracy.BestForNavigation,
     });
