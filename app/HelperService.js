@@ -8,6 +8,7 @@ import {
   startLocationUpdatesAsync,
   stopLocationUpdatesAsync,
 } from 'expo-location';
+import {HELP_API_URL} from './env';
 
 /// There are 4 public methods:
 /// start() to start sending coordinates to the server
@@ -34,7 +35,7 @@ class HelperService {
       longitude,
     };
     console.log('Sending locations to /helpers', body);
-    return await fetch('http://192.168.0.11:3000/helpers', {
+    return await fetch(HELP_API_URL + '/helpers', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
