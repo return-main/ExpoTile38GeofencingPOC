@@ -4,42 +4,7 @@ import {Notifications} from 'expo';
 import {askAsync, getAsync, LOCATION, NOTIFICATIONS} from 'expo-permissions';
 import {Accuracy, getCurrentPositionAsync, startLocationUpdatesAsync} from 'expo-location';
 import Constants from 'expo-constants';
-import {defineTask} from 'expo-task-manager';
 
-let YOUR_PUSH_TOKEN = '';
-const SENDING_POSITION_TASK_NAME = 'HELPER';
-
-const sendHelper = async (token, latitude, longitude) => {
-  const body = {
-    exponentPushToken: token,
-    latitude,
-    longitude,
-  };
-  console.log('Sending locations to /helpers', body);
-  return await fetch('http://192.168.0.11:3000/helpers', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(body),
-  }).then((response) => console.log('successfully sent helpers request: ', response.ok))
-    .catch((error) => {
-      console.log(error);
-    });
-};
-
-defineTask(SENDING_POSITION_TASK_NAME, ({data: {locations}, error}) => {
-  if (error) {
-    // check `error.message` for more details.
-    console.error(error);
-    return;
-  }
-  if (YOUR_PUSH_TOKEN === '') {
-    console.log('push token is not set, skipping');
-  }
-  const {latitude, longitude} = locations[0].coords;
-  sendHelper(YOUR_PUSH_TOKEN, latitude, longitude);
-});
 
 const styles = StyleSheet.create({
   container: {
@@ -56,7 +21,7 @@ export default class App extends React.Component {
   };
 
   registerForPushNotificationsAsync = async () => {
-    if (Constants.isDevice) {
+    if (true || Constants.isDevice) {
       const {status: existingStatus} = await getAsync(
         NOTIFICATIONS,
       );
@@ -73,7 +38,7 @@ export default class App extends React.Component {
         return;
       }
       YOUR_PUSH_TOKEN = await Notifications.getExpoPushTokenAsync();
-      console.log(YOUR_PUSH_TOKEN);
+      console.log('PUSH_TOKEN' + YOUR_PUSH_TOKEN);
     } else {
       // eslint-disable-next-line no-alert
       alert('Must use physical device for Push Notifications');
