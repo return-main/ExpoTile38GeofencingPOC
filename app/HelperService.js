@@ -1,12 +1,8 @@
 import Constants from 'expo-constants';
 import {askAsync, getAsync, LOCATION, NOTIFICATIONS} from 'expo-permissions';
-import {Notifications, Linking} from 'expo';
+import {Linking, Notifications} from 'expo';
 import {defineTask} from 'expo-task-manager';
-import {
-  Accuracy,
-  startLocationUpdatesAsync,
-  stopLocationUpdatesAsync,
-} from 'expo-location';
+import {Accuracy, startLocationUpdatesAsync, stopLocationUpdatesAsync} from 'expo-location';
 import {HELP_API_URL} from './env';
 
 /// There are 4 public methods:
@@ -114,10 +110,11 @@ class HelperService {
     }
   }
 
-  _isRunning = false
+  _isRunning = false;
   get isRunning() {
-    return this._isRunning
+    return this._isRunning;
   }
+
   async start() {
     await this._registerForPushNotificationsAsync();
     if (this._pushToken === '') {
@@ -126,11 +123,12 @@ class HelperService {
     await startLocationUpdatesAsync(HelperService._HELPER_TASK_NAME, {
       accuracy: Accuracy.BestForNavigation,
     });
-    this._isRunning = true
+    this._isRunning = true;
   }
+
   async stop() {
     await stopLocationUpdatesAsync(HelperService._HELPER_TASK_NAME);
-    this._isRunning = false
+    this._isRunning = false;
   }
 
   // eslint-disable-next-line class-methods-use-this
@@ -144,6 +142,4 @@ class HelperService {
 }
 
 const instance = new HelperService();
-Object.freeze(instance);
-
 export default instance;
