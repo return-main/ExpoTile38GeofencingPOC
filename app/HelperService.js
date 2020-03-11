@@ -4,6 +4,7 @@ import {Linking, Notifications} from 'expo';
 import {defineTask} from 'expo-task-manager';
 import {Accuracy, startLocationUpdatesAsync, stopLocationUpdatesAsync} from 'expo-location';
 import {HELP_API_URL} from './env';
+import {BehaviorSubject} from 'rxjs';
 
 /// There are 4 public methods:
 /// start() to start sending coordinates to the server
@@ -110,7 +111,7 @@ class HelperService {
     }
   }
 
-  _isRunning = false;
+  _isRunning = new BehaviorSubject(false);
   get isRunning() {
     return this._isRunning;
   }
@@ -123,12 +124,12 @@ class HelperService {
     await startLocationUpdatesAsync(HelperService._HELPER_TASK_NAME, {
       accuracy: Accuracy.BestForNavigation,
     });
-    this._isRunning = true;
+    this._isRunning.next(true);
   }
 
   async stop() {
     await stopLocationUpdatesAsync(HelperService._HELPER_TASK_NAME);
-    this._isRunning = false;
+    this._isRunning.next(false);
   }
 
   // eslint-disable-next-line class-methods-use-this
