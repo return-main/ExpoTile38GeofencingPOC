@@ -81,7 +81,7 @@ class HelperService {
         return;
       }
       const {latitude, longitude} = locations[0].coords;
-      HelperService._sendHelper(this._pushToken, latitude, longitude);
+      HelperService._sendHelper(this._pushToken, latitude, longitude).done();
     });
   }
 
