@@ -1,5 +1,5 @@
 import Constants from 'expo-constants';
-import {askAsync, getAsync, LOCATION, NOTIFICATIONS} from 'expo-permissions';
+import {askAsync, getAsync, NOTIFICATIONS} from 'expo-permissions';
 import {Linking, Notifications} from 'expo';
 import {defineTask} from 'expo-task-manager';
 import {Accuracy, startLocationUpdatesAsync, stopLocationUpdatesAsync} from 'expo-location';
@@ -10,7 +10,6 @@ import {BehaviorSubject} from 'rxjs';
 /// start() to start sending coordinates to the server
 /// stop() to stop sending coordinates to the server
 /// isRunning() to check if it's currently sending
-/// canBeStarted() to check if the conditions are met to start sending
 class HelperService {
   static _HELPER_TASK_NAME = 'HELPER_TASK';
   _pushToken = '';
@@ -132,14 +131,14 @@ class HelperService {
     this._isRunning.next(false);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  async canBeStarted() {
-    // if (!hasAcceptedRGPD) {
-    //   return false
-    // }
-    const {status} = await getAsync(NOTIFICATIONS, LOCATION);
-    return status === 'granted' && Constants.isDevice;
-  }
+  // // eslint-disable-next-line class-methods-use-this
+  // async canBeStarted() {
+  //   // if (!hasAcceptedRGPD) {
+  //   //   return false
+  //   // }
+  //   const {status} = await getAsync(NOTIFICATIONS, LOCATION);
+  //   return status === 'granted' && Constants.isDevice;
+  // }
 }
 
 const instance = new HelperService();
