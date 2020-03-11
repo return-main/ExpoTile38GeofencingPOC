@@ -3,7 +3,9 @@ import {Button, StyleSheet, View} from 'react-native';
 import {askAsync, LOCATION} from 'expo-permissions';
 import {getCurrentPositionAsync} from 'expo-location';
 import {HELP_API_URL} from './env';
-
+// Important, has to be imported at the start of the application
+import './HelperService';
+import HelperComponent from './HelperComponent';
 
 const styles = StyleSheet.create({
   container: {
@@ -45,6 +47,7 @@ export default class App extends React.Component {
     return (
       <View
         style={styles.container}>
+        <HelperComponent />
         <Button
           title={'Request help at 500 meters'}
           onPress={() => this.requestHelp()}

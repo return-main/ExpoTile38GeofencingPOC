@@ -4,7 +4,6 @@ import {Notifications, Linking} from 'expo';
 import {defineTask} from 'expo-task-manager';
 import {
   Accuracy,
-  hasStartedLocationUpdatesAsync,
   startLocationUpdatesAsync,
   stopLocationUpdatesAsync,
 } from 'expo-location';
@@ -114,18 +113,20 @@ class HelperService {
     }
   }
 
-  isRunning = () => hasStartedLocationUpdatesAsync(HelperService._HELPER_TASK_NAME);
-
+  _isRunning = false
+  get isRunning() {
+    return this._isRunning
+  }
   async start() {
     await this._registerForPushNotificationsAsync();
     await startLocationUpdatesAsync(HelperService._HELPER_TASK_NAME, {
       accuracy: Accuracy.BestForNavigation,
     });
+    this._isRunning = true
   }
-
-  // eslint-disable-next-line class-methods-use-this
   async stop() {
     await stopLocationUpdatesAsync(HelperService._HELPER_TASK_NAME);
+    this._isRunning = false
   }
 
   // eslint-disable-next-line class-methods-use-this
