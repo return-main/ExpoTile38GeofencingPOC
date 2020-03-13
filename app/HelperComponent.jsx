@@ -2,6 +2,7 @@ import React from 'react';
 import helperService from './HelperService';
 import {Button, View} from 'react-native';
 import {Card} from 'react-native-elements';
+import ErrorBoundary from 'react-native-error-boundary';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class HelperComponent extends React.Component {
@@ -9,21 +10,25 @@ class HelperComponent extends React.Component {
   handleOnPress = () => this.state.isRunning ? helperService.stop() : helperService.start();
 
   // state object
-  state = { isRunning: false };
+  state = {isRunning: false};
+
   componentDidMount() {
-    this._isRunningSubscription = helperService.isRunning.subscribe(next => this.setState({isRunning: next}))
+    this._isRunningSubscription = helperService.isRunning.subscribe(next => this.setState({isRunning: next}));
   }
+
   componentWillUnmount() {
-    this._isRunningSubscription.unsubscribe()
+    this._isRunningSubscription.unsubscribe();
   }
 
   render() {
     return (
       <Card title="Aider les Autres">
-        <Button
-          title={this.state.isRunning ? 'Arrêter' : 'Démarrer'}
-          onPress={this.handleOnPress}
-        />
+        <ErrorBoundary>
+          <Button
+            title={this.state.isRunning ? 'Arrêter' : 'Démarrer'}
+            onPress={this.handleOnPress}
+          />
+        </ErrorBoundary>
       </Card>
     );
   }

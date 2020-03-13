@@ -6,6 +6,7 @@ import HelpeeComponent from './HelpeeComponent.jsx';
 // Important, has to be imported at the start of the application
 import './HelperService';
 import {Button, Card} from 'react-native-elements';
+import ErrorBoundary from 'react-native-error-boundary';
 
 const styles = StyleSheet.create({
   container: {
@@ -25,9 +26,11 @@ export default function App() {
         </View>
       </Card>
       <Card title={'Appeler les Urgences !'}>
-        <Button
-          icon={{name: 'ambulance', type: 'font-awesome'}}
-          title='Appeler le 18'/>
+        <ErrorBoundary>
+          <Button
+            icon={{name: 'ambulance', type: 'font-awesome'}}
+            title='Appeler le 18'/>
+        </ErrorBoundary>
       </Card>
     </View>
   );
