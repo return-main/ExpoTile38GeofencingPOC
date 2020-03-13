@@ -1,6 +1,7 @@
 import React from 'react';
 import helperService from './HelperService';
 import {Button, View} from 'react-native';
+import {Card} from 'react-native-elements';
 
 // eslint-disable-next-line react/prefer-stateless-function
 class HelperComponent extends React.Component {
@@ -18,12 +19,12 @@ class HelperComponent extends React.Component {
 
   render() {
     return (
-      <View>
+      <Card title="Aider les Autres">
         <Button
-          title={this.state.isRunning ? 'Stop' : 'Start'}
+          title={this.state.isRunning ? 'Arrêter' : 'Démarrer'}
           onPress={this.handleOnPress}
         />
-      </View>
+      </Card>
     );
   }
 }
