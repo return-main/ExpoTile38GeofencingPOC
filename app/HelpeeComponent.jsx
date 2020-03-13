@@ -13,6 +13,7 @@ class HelpeeComponent extends React.Component {
         <ErrorBoundary>
           <Button
             title={'Demander de l\'aide'}
+            icon={{name: 'hand-holding-heart', type: 'font-awesome'}}
             onPress={this.handleOnPress}
           />
         </ErrorBoundary>

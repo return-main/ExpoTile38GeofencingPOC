@@ -26,6 +26,7 @@ class HelperComponent extends React.Component {
         <ErrorBoundary>
           <Button
             title={this.state.isRunning ? 'Arrêter' : 'Démarrer'}
+            icon={{name: 'hands-helping', type: 'font-awesome'}}
             onPress={this.handleOnPress}
           />
         </ErrorBoundary>
