@@ -54,7 +54,7 @@ class HelperService {
       latitude,
       longitude,
     };
-    console.log('Sending locations to /helpers', body);
+    console.log('Sending location to /helpers', body);
     return await fetch(HELP_API_URL + '/helpers', {
       method: 'POST',
       headers: {

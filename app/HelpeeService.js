@@ -6,18 +6,15 @@ class HelpeeService {
   static requestHelp = async () => {
     const {status} = await askAsync(LOCATION);
     if (status !== 'granted') {
-      // eslint-disable-next-line no-invalid-this
-      this.setState({
-        errorMessage: 'Permission to access location was denied',
-      });
+      console.log('Permission to access location was denied');
+      return;
     }
-    const location = await getCurrentPositionAsync({});
-    console.log('location' + location.coords);
+    const location = await getCurrentPositionAsync({enableHighAccuracy: true});
     const body = {
       latitude: location.coords.latitude,
       longitude: location.coords.longitude,
     };
-    console.log('Sending locations to /helpee', body);
+    console.log('Sending location to /helpee', body);
     return await fetch(HELP_API_URL + '/helpee', {
       method: 'POST',
       headers: {
