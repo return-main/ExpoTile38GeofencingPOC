@@ -6,11 +6,17 @@ const getHelpers = require('./get_helpers');
 const Redis = require("redis");
 const util = require('util');
 const notifyHelpers = require('./notify_helpers');
+const fs = require('fs')
+const path = require('path')
 
 function buildFastify() {
   // Require the server framework and instantiate it
   const fastify = Fastify({
     logger: true,
+	  https: {
+		  key: fs.readFileSync(path.join(__dirname, 'file.key')),
+		  cert: fs.readFileSync(path.join(__dirname, 'file.cert'))
+	  }
   });
   const tile38Client = Redis.createClient(9851, "localhost");
   const send_command = util.promisify(tile38Client.send_command).bind(tile38Client);
