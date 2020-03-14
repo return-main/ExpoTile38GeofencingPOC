@@ -2,10 +2,16 @@
 ![Explanation](Tile38.png?raw=true "How it works")
 
 #How to start
+Use docker-compose
+```bash
+docker-compose build && docker-compose up
+```
+OR
 - start the tile38 database (a bash script is provided)
 - start the server
 ```bash
 ./tile38_docker.sh &
+yarn install
 yarn start
 ```
 
