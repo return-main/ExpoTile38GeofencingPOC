@@ -11,8 +11,8 @@ OR
 - start the server
 ```bash
 ./tile38_docker.sh &
-yarn install
-yarn start
+mpm install
+npm run start
 ```
 
 #Tile38 Commands:
