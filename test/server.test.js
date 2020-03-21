@@ -3,6 +3,7 @@ const {HELPERS} = require('../lib/constants');
 const Redis = require('redis');
 const util = require('util');
 const addHelper = require('../lib/add_helper');
+const deleteHelper = require('../lib/delete_helper');
 const getHelpers = require('../lib/get_helpers');
 const convertPushTokenListToMessageObject = require('../lib/convert_push_token_list_to_message_object');
 const notifyHelpers = require('../lib/notify_helpers');
@@ -53,13 +54,65 @@ describe('server test', () => {
       done();
     });
   });
-  test('addHelpers function', async (done) => {
+  test('addHelper function', async (done) => {
     const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
     const latitude = 48.81903;
     const longitude = 2.41197;
     await addHelper(send_command, exponentPushToken, latitude, longitude);
     const reply = await send_command('GET', [HELPERS, exponentPushToken]);
     expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [longitude, latitude]});
+    done();
+  });
+  test('Deleting helper using the route /helpers', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
+    const body = {
+      exponentPushToken,
+      'latitude': 48.81903,
+      'longitude': 2.41197,
+    };
+    let response = await fastify.inject({
+      method: 'POST',
+      url: '/helpers',
+      body: body,
+    });
+    expect(response.statusCode).toBe(200);
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+      expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]});
+    });
+    response = await fastify.inject({
+      method: 'DELETE',
+      url: '/helpers',
+      body: {exponentPushToken},
+    });
+    expect(response.statusCode).toBe(200);
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+      expect(JSON.parse(reply)).toBe(null);
+      done();
+    });
+  });
+  test('Deleting unknown helper using the route /helpers', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
+    const response = await fastify.inject({
+      method: 'DELETE',
+      url: '/helpers',
+      body: {exponentPushToken},
+    });
+    expect(response.statusCode).toBe(200);
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+      expect(JSON.parse(reply)).toBe(null);
+      done();
+    });
+  });
+  test('deleteHelper function', async (done) => {
+    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]';
+    const latitude = 48.81903;
+    const longitude = 2.41197;
+    await addHelper(send_command, exponentPushToken, latitude, longitude);
+    let reply = await send_command('GET', [HELPERS, exponentPushToken]);
+    expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [longitude, latitude]});
+    await deleteHelper(send_command, exponentPushToken)
+    reply = await send_command('GET', [HELPERS, exponentPushToken]);
+    expect(JSON.parse(reply)).toBe(null);
     done();
   });
   test('Sending weird stuff to /helpers', async (done) => {
