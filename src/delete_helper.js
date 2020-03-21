@@ -35,26 +35,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-var axios_1 = __importDefault(require("axios"));
-var convert_push_token_list_to_message_object_1 = require("./convert_push_token_list_to_message_object");
-/// Takes a list of ExponentPushToken and sends push notifications to them
-function notifyHelpers(helpers, message) {
+var constants_1 = require("./constants");
+function deleteHelper(send_command, id) {
     return __awaiter(this, void 0, void 0, function () {
-        var body;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    body = convert_push_token_list_to_message_object_1.convertPushTokenListToMessageObject(helpers, message);
-                    return [4 /*yield*/, axios_1.default.post('https://exp.host/--/api/v2/push/send', body, { headers: {
-                                'Content-Type': 'application/json'
-                            } })];
-                case 1: return [2 /*return*/, _a.sent()];
+                case 0: return [4 /*yield*/, send_command('DEL', [constants_1.HELPERS, id])];
+                case 1:
+                    _a.sent();
+                    return [2 /*return*/];
             }
         });
     });
 }
-exports.notifyHelpers = notifyHelpers;
+exports.deleteHelper = deleteHelper;

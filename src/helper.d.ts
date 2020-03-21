@@ -1,4 +1,4 @@
-interface Helper {
+export interface Helper {
   token: string;
   latitude: number;
   longitude: number;

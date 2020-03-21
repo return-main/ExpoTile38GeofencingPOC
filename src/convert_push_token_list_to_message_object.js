@@ -11,4 +11,4 @@ function convertPushTokenListToMessageObject(helpers, message) {
         },
     }); });
 }
-module.exports = convertPushTokenListToMessageObject;
+exports.convertPushTokenListToMessageObject = convertPushTokenListToMessageObject;

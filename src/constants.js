@@ -1,15 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 /// Category name for tile38
-const HELPERS = 'helpers';
-
+exports.HELPERS = 'helpers';
 // Used as keys in JSON Bodies
-const EXPONENT_PUSH_TOKEN = 'exponentPushToken';
+exports.EXPONENT_PUSH_TOKEN = 'exponentPushToken';
 // Used as keys in JSON Bodies
-const LATITUDE = 'latitude';
+exports.LATITUDE = 'latitude';
 // Used as keys in JSON Bodies
-const LONGITUDE = 'longitude';
+exports.LONGITUDE = 'longitude';
 // Used as keys in JSON Bodies
-const MESSAGE = 'message';
-
-module.exports = {
-  HELPERS, EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE, MESSAGE
-};
+exports.MESSAGE = 'message';

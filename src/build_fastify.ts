@@ -1,14 +1,14 @@
 import fastify, {FastifyInstance} from 'fastify'
 import {deleteHelper} from './delete_helper'
-const {EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE, MESSAGE} = require('./constants');
-const FluentSchema = require('fluent-schema');
-const addHelper = require('./add_helper');
-const getHelpers = require('./get_helpers');
-const Redis = require("redis");
-const util = require('util');
-const notifyHelpers = require('./notify_helpers');
-const fs = require('fs')
-const path = require('path')
+import FluentSchema from 'fluent-schema'
+import {addHelper} from './add_helper'
+import {getHelpers} from './get_helpers'
+import Redis from 'redis'
+import {EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE, MESSAGE} from './constants'
+import util from 'util'
+import {notifyHelpers} from './notify_helpers'
+import fs from 'fs'
+import path from 'path'
 
 export function buildFastify(): FastifyInstance {
   // Require the server framework and instantiate it

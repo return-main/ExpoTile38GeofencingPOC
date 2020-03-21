@@ -40,28 +40,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var fastify_1 = __importDefault(require("fastify"));
-var _a = require('./constants'), EXPONENT_PUSH_TOKEN = _a.EXPONENT_PUSH_TOKEN, LATITUDE = _a.LATITUDE, LONGITUDE = _a.LONGITUDE, MESSAGE = _a.MESSAGE;
-var FluentSchema = require('fluent-schema');
-var addHelper = require('./add_helper');
-var deleteHelper = require('./delete_helper');
-var getHelpers = require('./get_helpers');
-var Redis = require("redis");
-var util = require('util');
-var notifyHelpers = require('./notify_helpers');
-var fs = require('fs');
-var path = require('path');
+var delete_helper_1 = require("./delete_helper");
+var fluent_schema_1 = __importDefault(require("fluent-schema"));
+var add_helper_1 = require("./add_helper");
+var get_helpers_1 = require("./get_helpers");
+var redis_1 = __importDefault(require("redis"));
+var constants_1 = require("./constants");
+var util_1 = __importDefault(require("util"));
+var notify_helpers_1 = require("./notify_helpers");
 function buildFastify() {
     var _this = this;
     // Require the server framework and instantiate it
     var server = fastify_1.default({
         logger: true,
     });
-    var tile38Client = Redis.createClient(9851, process.env.DOCKER ? "tile38" : "localhost");
-    var send_command = util.promisify(tile38Client.send_command).bind(tile38Client);
-    var helpersRouteBodySchema = FluentSchema.object()
-        .prop(EXPONENT_PUSH_TOKEN, FluentSchema.string()).required()
-        .prop(LATITUDE, FluentSchema.number()).required()
-        .prop(LONGITUDE, FluentSchema.number()).required();
+    var tile38Client = redis_1.default.createClient(9851, process.env.DOCKER ? "tile38" : "localhost");
+    var send_command = util_1.default.promisify(tile38Client.send_command).bind(tile38Client);
+    var helpersRouteBodySchema = fluent_schema_1.default.object()
+        .prop(constants_1.EXPONENT_PUSH_TOKEN, fluent_schema_1.default.string()).required()
+        .prop(constants_1.LATITUDE, fluent_schema_1.default.number()).required()
+        .prop(constants_1.LONGITUDE, fluent_schema_1.default.number()).required();
     // Helpers route
     server.post('/helpers', {
         schema: {
@@ -72,7 +70,7 @@ function buildFastify() {
             switch (_a.label) {
                 case 0:
                     console.log('Adding helper', request.body);
-                    return [4 /*yield*/, addHelper(send_command, request.body[EXPONENT_PUSH_TOKEN], request.body[LATITUDE], request.body[LONGITUDE])];
+                    return [4 /*yield*/, add_helper_1.addHelper(send_command, request.body[constants_1.EXPONENT_PUSH_TOKEN], request.body[constants_1.LATITUDE], request.body[constants_1.LONGITUDE])];
                 case 1:
                     _a.sent();
                     reply.code(200).send();
@@ -80,8 +78,8 @@ function buildFastify() {
             }
         });
     }); });
-    var deleteHelpersRouteBodySchema = FluentSchema.object()
-        .prop(EXPONENT_PUSH_TOKEN, FluentSchema.string()).required();
+    var deleteHelpersRouteBodySchema = fluent_schema_1.default.object()
+        .prop(constants_1.EXPONENT_PUSH_TOKEN, fluent_schema_1.default.string()).required();
     // This route deletes the helper prematurely from the database
     server.delete('/helpers', {
         schema: {
@@ -92,7 +90,7 @@ function buildFastify() {
             switch (_a.label) {
                 case 0:
                     console.log('Deleting helper', request.body);
-                    return [4 /*yield*/, deleteHelper(send_command, request.body[EXPONENT_PUSH_TOKEN])];
+                    return [4 /*yield*/, delete_helper_1.deleteHelper(send_command, request.body[constants_1.EXPONENT_PUSH_TOKEN])];
                 case 1:
                     _a.sent();
                     reply.code(200).send();
@@ -100,10 +98,10 @@ function buildFastify() {
             }
         });
     }); });
-    var helpeeRouteBodySchema = FluentSchema.object()
-        .prop(LATITUDE, FluentSchema.number()).required()
-        .prop(LONGITUDE, FluentSchema.number()).required()
-        .prop(MESSAGE, FluentSchema.string()).required();
+    var helpeeRouteBodySchema = fluent_schema_1.default.object()
+        .prop(constants_1.LATITUDE, fluent_schema_1.default.number()).required()
+        .prop(constants_1.LONGITUDE, fluent_schema_1.default.number()).required()
+        .prop(constants_1.MESSAGE, fluent_schema_1.default.string()).required();
     // Helpee route
     server.post('/helpee', {
         schema: {
@@ -113,13 +111,24 @@ function buildFastify() {
         var helpers;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, getHelpers(send_command, request.body[LATITUDE], request.body[LONGITUDE])];
+                case 0: return [4 /*yield*/, get_helpers_1.getHelpers(send_command, request.body[constants_1.LATITUDE], request.body[constants_1.LONGITUDE])];
                 case 1:
                     helpers = _a.sent();
-                    return [4 /*yield*/, notifyHelpers(helpers, request.body[MESSAGE])];
+                    return [4 /*yield*/, notify_helpers_1.notifyHelpers(helpers, request.body[constants_1.MESSAGE])];
                 case 2:
                     _a.sent();
                     reply.code(200).send();
+                    return [2 /*return*/];
+            }
+        });
+    }); });
+    server.addHook('onClose', function (instance, done) { return __awaiter(_this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, tile38Client.quit()];
+                case 1:
+                    _a.sent();
+                    done();
                     return [2 /*return*/];
             }
         });
