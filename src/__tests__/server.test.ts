@@ -11,6 +11,7 @@ import sinon from 'sinon'
 import {HELPERS} from '../constants'
 import {Helper} from '../helper'
 import {Helpee} from '../Helpee'
+import {ExpoPushMessage} from 'expo-server-sdk'
 
 describe('server test', () => {
   const fastify = buildFastify()
@@ -49,6 +50,26 @@ describe('server test', () => {
     longitude: 2.41197,
     message: MOCK_MESSAGE
   }
+  const MOCK_EXPO_PUSH_MESSAGES: ExpoPushMessage[] = [
+    {
+      body: MOCK_HELPEE.message,
+      data: {
+        latitude: MOCK_HELPEE.latitude,
+        longitude: MOCK_HELPEE.longitude
+      },
+      title: "Demande d'aide !",
+      to: MOCK_HELPERS[0].exponentPushToken
+    },
+    {
+      body: MOCK_HELPEE.message,
+      data: {
+        latitude: MOCK_HELPEE.latitude,
+        longitude: MOCK_HELPEE.longitude
+      },
+      title: "Demande d'aide !",
+      to: MOCK_HELPERS[1].exponentPushToken
+    },
+  ]
   test('404 on unknown route', async (done) => {
     const response = await fastify.inject({
       method: 'GET',
@@ -178,11 +199,7 @@ describe('server test', () => {
   })
   test('convertPushTokenListToMessageObject', () => {
     const messageObject = convertPushTokenListToMessageObject(MOCK_HELPERS, MOCK_HELPEE)
-    expect(messageObject).toStrictEqual([{
-      'body': 'world',
-      'title': 'hello',
-      'to': 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]',
-    }, {'body': 'world', 'title': 'hello', 'to': 'ExponentPushToken[Xlno3HBWUEINRLg2gx0bMl]'}])
+    expect(messageObject).toStrictEqual(MOCK_EXPO_PUSH_MESSAGES)
   })
   test('notifyHelpers', (done) => {
     moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
@@ -203,7 +220,7 @@ describe('server test', () => {
       latitude: 48.81903,
       longitude: 2.41197,
     }
-    var response = await fastify.inject({
+    let response = await fastify.inject({
       method: 'POST',
       url: '/helpers',
       payload: body,
@@ -214,7 +231,7 @@ describe('server test', () => {
     })
 
     /// Ask for help less than 500 meters away
-    moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
+    await moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
       status: 200,
     })
     response = await fastify.inject({
