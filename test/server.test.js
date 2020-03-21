@@ -11,7 +11,7 @@ const sinon = require('sinon');
 
 describe('server test', () => {
   const fastify = buildFastify();
-  const tile38Client = Redis.createClient(9851, 'localhost');
+  const tile38Client = Redis.createClient(9851, process.env.DOCKER ? "tile38" : "localhost");
   const send_command = util.promisify(tile38Client.send_command).bind(tile38Client);
 
   beforeEach(function () {
