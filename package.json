@@ -2,22 +2,50 @@
   "name": "server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "start": "node index.js",
-    "test": "jest"
+    "start": "node index.ts",
+    "test": "jest",
+    "tsc": "tsc",
+    "watch": "tsc --watch"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "axios": "^0.19.2",
+    "expo-server-sdk": "^3.4.0",
     "fastify": "^2.13.0",
     "fluent-schema": "^0.10.0",
     "redis": "^3.0.2"
   },
   "devDependencies": {
+    "@types/geojson": "^7946.0.7",
+    "@types/jest": "^25.1.4",
+    "@types/node": "^13.9.2",
+    "@types/node-fetch": "^2.5.5",
+    "@types/redis": "^2.8.16",
     "jest": "^25.1.0",
     "moxios": "^0.4.0",
-    "sinon": "^9.0.0"
+    "sinon": "^9.0.0",
+    "ts-jest": "^25.2.1",
+    "ts-node": "^8.7.0",
+    "tslint": "^6.1.0",
+    "typescript": "^3.8.3"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "roots": [
+      "<rootDir>/src/"
+    ],
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsConfig": "tsconfig.json"
+      }
+    },
+    "testEnvironment": "node"
   }
 }

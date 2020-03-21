@@ -1,5 +1,5 @@
-const Fastify = require('fastify');
-const {EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE} = require('./constants');
+import fastify, {FastifyInstance} from 'fastify'
+const {EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE, MESSAGE} = require('./constants');
 const FluentSchema = require('fluent-schema');
 const addHelper = require('./add_helper');
 const deleteHelper = require('./delete_helper');
@@ -10,9 +10,9 @@ const notifyHelpers = require('./notify_helpers');
 const fs = require('fs')
 const path = require('path')
 
-function buildFastify() {
+export function buildFastify(): FastifyInstance {
   // Require the server framework and instantiate it
-  const fastify = Fastify({
+  const server = fastify({
     logger: true,
 	  // https: {
 		//   key: fs.readFileSync(path.join(__dirname, 'file.key')),
@@ -27,7 +27,7 @@ function buildFastify() {
     .prop(LATITUDE, FluentSchema.number()).required()
     .prop(LONGITUDE, FluentSchema.number()).required();
   // Helpers route
-  fastify.post('/helpers', {
+  server.post('/helpers', {
     schema: {
       body: helpersRouteBodySchema,
     },
@@ -40,7 +40,7 @@ function buildFastify() {
   const deleteHelpersRouteBodySchema = FluentSchema.object()
     .prop(EXPONENT_PUSH_TOKEN, FluentSchema.string()).required();
   // This route deletes the helper prematurely from the database
-  fastify.delete('/helpers', {
+  server.delete('/helpers', {
     schema: {
       body: deleteHelpersRouteBodySchema,
     },
@@ -52,19 +52,18 @@ function buildFastify() {
 
   const helpeeRouteBodySchema = FluentSchema.object()
     .prop(LATITUDE, FluentSchema.number()).required()
-    .prop(LONGITUDE, FluentSchema.number()).required();
+    .prop(LONGITUDE, FluentSchema.number()).required()
+    .prop(MESSAGE, FluentSchema.string()).required();
   // Helpee route
-  fastify.post('/helpee', {
+  server.post('/helpee', {
     schema: {
       body: helpeeRouteBodySchema,
     },
   }, async (request, reply) => {
     const helpers = await getHelpers(send_command, request.body[LATITUDE], request.body[LONGITUDE]);
-    await notifyHelpers(helpers);
+    await notifyHelpers(helpers, request.body[MESSAGE]);
     reply.code(200).send();
   });
 
-  return fastify;
+  return server;
 }
-
-module.exports = buildFastify;

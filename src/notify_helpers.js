@@ -2,12 +2,11 @@ const axios = require('axios')
 const convertPushTokenListToMessageObject = require('./convert_push_token_list_to_message_object');
 
 /// Takes a list of ExponentPushToken and sends push notifications to them
-async function notifyHelpers(helpers) {
-  const body = convertPushTokenListToMessageObject(helpers);
+async function notifyHelpers(helpers, message) {
+  const body = convertPushTokenListToMessageObject(helpers, message);
   return await axios.post('https://exp.host/--/api/v2/push/send', body, {headers :{
       'Content-Type': 'application/json'
     }})
 }
 
 module.exports = notifyHelpers;
-

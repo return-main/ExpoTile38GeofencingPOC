@@ -1,12 +1,12 @@
-const buildFastify = require('../lib/build_fastify');
-const {HELPERS} = require('../lib/constants');
+import {buildFastify} from '../build_fastify'
+const {HELPERS} = require('../constants');
 const Redis = require('redis');
 const util = require('util');
-const addHelper = require('../lib/add_helper');
-const deleteHelper = require('../lib/delete_helper');
-const getHelpers = require('../lib/get_helpers');
-const convertPushTokenListToMessageObject = require('../lib/convert_push_token_list_to_message_object');
-const notifyHelpers = require('../lib/notify_helpers');
+const addHelper = require('../add_helper');
+const deleteHelper = require('../delete_helper');
+const getHelpers = require('../get_helpers');
+const convertPushTokenListToMessageObject = require('../convert_push_token_list_to_message_object');
+const notifyHelpers = require('../notify_helpers');
 const moxios = require('moxios');
 const sinon = require('sinon');
 
@@ -26,6 +26,7 @@ describe('server test', () => {
 
   afterAll(async () => {
     await fastify.close();
+    await tile38Client.quit()
   });
 
   test('404 on unknown route', async (done) => {
@@ -46,10 +47,10 @@ describe('server test', () => {
     const response = await fastify.inject({
       method: 'POST',
       url: '/helpers',
-      body: body,
+      payload: body,
     });
     expect(response.statusCode).toBe(200);
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
       expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]});
       done();
     });
@@ -73,19 +74,19 @@ describe('server test', () => {
     let response = await fastify.inject({
       method: 'POST',
       url: '/helpers',
-      body: body,
+      payload: body,
     });
     expect(response.statusCode).toBe(200);
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
       expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]});
     });
     response = await fastify.inject({
       method: 'DELETE',
       url: '/helpers',
-      body: {exponentPushToken},
+      payload: {exponentPushToken},
     });
     expect(response.statusCode).toBe(200);
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
       expect(JSON.parse(reply)).toBe(null);
       done();
     });
@@ -95,10 +96,10 @@ describe('server test', () => {
     const response = await fastify.inject({
       method: 'DELETE',
       url: '/helpers',
-      body: {exponentPushToken},
+      payload: {exponentPushToken},
     });
     expect(response.statusCode).toBe(200);
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
       expect(JSON.parse(reply)).toBe(null);
       done();
     });
@@ -124,7 +125,7 @@ describe('server test', () => {
     const response = await fastify.inject({
       method: 'POST',
       url: '/helpers',
-      body: body,
+      payload: body,
     });
     expect(response.statusCode).toBe(400);
     done();
@@ -137,7 +138,7 @@ describe('server test', () => {
     const response = await fastify.inject({
       method: 'POST',
       url: '/helpers',
-      body: body,
+      payload: body,
     });
     expect(response.statusCode).toBe(400);
     done();
@@ -214,10 +215,10 @@ describe('server test', () => {
     var response = await fastify.inject({
       method: 'POST',
       url: '/helpers',
-      body: body,
+      payload: body,
     });
     expect(response.statusCode).toBe(200);
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
       expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]});
     });
 
@@ -228,7 +229,7 @@ describe('server test', () => {
     response = await fastify.inject({
       method: 'POST',
       url: '/helpee',
-      body: {
+      payload: {
         latitude: 48.81697,
         longitude: 2.40658,
       },
@@ -251,10 +252,10 @@ describe('server test', () => {
     var response = await fastify.inject({
       method: 'POST',
       url: '/helpers',
-      body: body,
+      payload: body,
     });
     expect(response.statusCode).toBe(200);
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply) => {
+    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
       expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]});
     });
 
@@ -265,7 +266,7 @@ describe('server test', () => {
     response = await fastify.inject({
       method: 'POST',
       url: '/helpee',
-      body: {
+      payload: {
         latitude: 48.8584,
         longitude: 2.2945,
       },

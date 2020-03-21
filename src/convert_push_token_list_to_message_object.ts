@@ -1,10 +1,12 @@
 /// Takes a list of ExponentPushToken and converts them to a message object
 /// See: https://docs.expo.io/versions/latest/guides/push-notifications/
-function convertPushTokenListToMessageObject(helpers) {
+import {ExpoPushMessage} from 'expo-server-sdk'
+
+function convertPushTokenListToMessageObject(helpers: Helper[], message: string): ExpoPushMessage[]{
   return helpers.map(helper => ({
     to: helper.token,
     title: 'Demande d\'aide !',
-    body: 'Cliquez pour voir l\'emplacement',
+    body: message,
     data: {
       latitude: helper.latitude,
       longitude: helper.longitude
