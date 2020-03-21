@@ -26,7 +26,7 @@ describe('server test', () => {
 
   afterAll(async () => {
     await fastify.close();
-    await tile38Client.quit()
+    await tile38Client.quit();
   });
 
   test('404 on unknown route', async (done) => {

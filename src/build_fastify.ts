@@ -65,5 +65,10 @@ export function buildFastify(): FastifyInstance {
     reply.code(200).send();
   });
 
+  server.addHook('onClose', async (instance, done) => {
+    await tile38Client.quit()
+    done()
+  })
+
   return server;
 }
