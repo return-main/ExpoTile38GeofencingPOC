@@ -129,7 +129,7 @@ function buildFastify() {
                     return [4 /*yield*/, notify_helpers_1.notifyHelpers(helpers, helpee)];
                 case 2:
                     _a.sent();
-                    reply.code(200).send();
+                    reply.code(200).send({ notifiedCount: helpers.length });
                     return [2 /*return*/];
             }
         });

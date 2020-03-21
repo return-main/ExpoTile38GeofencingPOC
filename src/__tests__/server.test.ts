@@ -253,6 +253,8 @@ describe('server test', () => {
       },
     })
     expect(response.statusCode).toBe(200)
+    // notifies 1 person
+    expect(JSON.parse(response.body).notifiedCount).toBe(1)
     moxios.wait(function () {
       const request = moxios.requests.mostRecent()
       expect(JSON.parse(request.config.data)).toStrictEqual(convertPushTokenListToMessageObject([MOCK_HELPERS[0]], MOCK_HELPEE))
@@ -290,6 +292,8 @@ describe('server test', () => {
       },
     })
     expect(response.statusCode).toBe(200)
+    // notifies 0 people
+    expect(JSON.parse(response.body).notifiedCount).toBe(0)
     moxios.wait(function () {
       const request = moxios.requests.mostRecent()
       // notifies 0 people

@@ -74,7 +74,7 @@ export function buildFastify(): FastifyInstance {
     }
     const helpers = await getHelpers(send_command, helpee.latitude, helpee.longitude);
     await notifyHelpers(helpers, helpee);
-    reply.code(200).send();
+    reply.code(200).send({notifiedCount: helpers.length});
   });
 
   server.addHook('onClose', async (instance, done) => {
