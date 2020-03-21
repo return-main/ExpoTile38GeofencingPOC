@@ -238,9 +238,9 @@ describe('server test', () => {
       method: 'POST',
       url: '/helpee',
       payload: {
-        latitude: 48.81697,
-        longitude: 2.40658,
-        message: MOCK_MESSAGE
+        latitude: MOCK_HELPEE.latitude,
+        longitude: MOCK_HELPEE.longitude,
+        message: MOCK_HELPEE.message
       },
     })
     expect(response.statusCode).toBe(200)
