@@ -10,6 +10,7 @@ import moxios from 'moxios'
 import sinon from 'sinon'
 import {HELPERS} from '../constants'
 import {Helper} from '../helper'
+import {Helpee} from '../Helpee'
 
 describe('server test', () => {
   const fastify = buildFastify()
@@ -31,17 +32,23 @@ describe('server test', () => {
   })
 
   const MOCK_PUSH_TOKEN = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]'
-  const MOCK_HELPERS: Helper[] = [{
-    token: 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]',
+  const MOCK_HELPER: Helper = {
+    exponentPushToken: MOCK_PUSH_TOKEN,
     latitude: 48.81903,
     longitude: 2.41197,
-  }, {
-    token: 'ExponentPushToken[Xlno3HBWUEINRLg2gx0bMl]',
-    latitude: 48.81697,
-    longitude: 2.40658,
-  },
-  ]
+  }
+  const MOCK_HELPERS: Helper[] = [
+    MOCK_HELPER, {
+      exponentPushToken: 'ExponentPushToken[Xlno3HBWUEINRLg2gx0bMl]',
+      latitude: 48.81697,
+      longitude: 2.40658,
+    }]
   const MOCK_MESSAGE = 'I\'ve fallen and I can\'t get up !'
+  const MOCK_HELPEE: Helpee = {
+    latitude: 48.81903,
+    longitude: 2.41197,
+    message: MOCK_MESSAGE
+  }
   test('404 on unknown route', async (done) => {
     const response = await fastify.inject({
       method: 'GET',
@@ -51,11 +58,10 @@ describe('server test', () => {
     done()
   })
   test('Adding a helper using the route /helpers', async (done) => {
-    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]'
     const body = {
-      exponentPushToken,
-      'latitude': 48.81903,
-      'longitude': 2.41197,
+      exponentPushToken: MOCK_PUSH_TOKEN,
+      latitude: 48.81903,
+      longitude: 2.41197,
     }
     const response = await fastify.inject({
       method: 'POST',
@@ -63,24 +69,20 @@ describe('server test', () => {
       payload: body,
     })
     expect(response.statusCode).toBe(200)
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
+    send_command('GET', [HELPERS, MOCK_PUSH_TOKEN]).then((reply: string) => {
       expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]})
       done()
     })
   })
   test('addHelper function', async (done) => {
-    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]'
-    const latitude = 48.81903
-    const longitude = 2.41197
-    await addHelper(send_command, exponentPushToken, latitude, longitude)
-    const reply = await send_command('GET', [HELPERS, exponentPushToken])
-    expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [longitude, latitude]})
+    await addHelper(send_command, MOCK_HELPER)
+    const reply = await send_command('GET', [HELPERS, MOCK_HELPER.exponentPushToken])
+    expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [MOCK_HELPER.longitude, MOCK_HELPER.latitude]})
     done()
   })
   test('Deleting helper using the route /helpers', async (done) => {
-    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]'
     const body = {
-      exponentPushToken,
+      exponentPushToken: MOCK_PUSH_TOKEN,
       'latitude': 48.81903,
       'longitude': 2.41197,
     }
@@ -90,42 +92,38 @@ describe('server test', () => {
       payload: body,
     })
     expect(response.statusCode).toBe(200)
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
+    send_command('GET', [HELPERS, MOCK_PUSH_TOKEN]).then((reply: string) => {
       expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [2.41197, 48.81903]})
     })
     response = await fastify.inject({
       method: 'DELETE',
       url: '/helpers',
-      payload: {exponentPushToken},
+      payload: {exponentPushToken: MOCK_PUSH_TOKEN},
     })
     expect(response.statusCode).toBe(200)
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
+    send_command('GET', [HELPERS, MOCK_PUSH_TOKEN]).then((reply: string) => {
       expect(JSON.parse(reply)).toBe(null)
       done()
     })
   })
   test('Deleting unknown helper using the route /helpers', async (done) => {
-    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]'
     const response = await fastify.inject({
       method: 'DELETE',
       url: '/helpers',
-      payload: {exponentPushToken},
+      payload: {exponentPushToken: MOCK_PUSH_TOKEN},
     })
     expect(response.statusCode).toBe(200)
-    send_command('GET', [HELPERS, exponentPushToken]).then((reply: string) => {
+    send_command('GET', [HELPERS, MOCK_PUSH_TOKEN]).then((reply: string) => {
       expect(JSON.parse(reply)).toBe(null)
       done()
     })
   })
   test('deleteHelper function', async (done) => {
-    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]'
-    const latitude = 48.81903
-    const longitude = 2.41197
-    await addHelper(send_command, exponentPushToken, latitude, longitude)
-    let reply = await send_command('GET', [HELPERS, exponentPushToken])
-    expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [longitude, latitude]})
-    await deleteHelper(send_command, exponentPushToken)
-    reply = await send_command('GET', [HELPERS, exponentPushToken])
+    await addHelper(send_command, MOCK_HELPER)
+    let reply = await send_command('GET', [HELPERS, MOCK_HELPER.exponentPushToken])
+    expect(JSON.parse(reply)).toStrictEqual({'type': 'Point', 'coordinates': [MOCK_HELPER.longitude, MOCK_HELPER.latitude]})
+    await deleteHelper(send_command, MOCK_HELPER.exponentPushToken)
+    reply = await send_command('GET', [HELPERS, MOCK_HELPER.exponentPushToken])
     expect(JSON.parse(reply)).toBe(null)
     done()
   })
@@ -157,46 +155,29 @@ describe('server test', () => {
     done()
   })
   test('getHelpers function on same position', async (done) => {
-    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]'
-    const latitude = 48.81903
-    const longitude = 2.41197
-    await addHelper(send_command, exponentPushToken, latitude, longitude)
-    const helpers = await getHelpers(send_command, latitude, longitude)
-    expect(helpers).toStrictEqual([{
-      latitude: 48.81903,
-      longitude: 2.41197,
-      token: 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]',
-    }])
+    await addHelper(send_command, MOCK_HELPER)
+    const helpers = await getHelpers(send_command, MOCK_HELPER.latitude, MOCK_HELPER.longitude)
+    expect(helpers).toStrictEqual([MOCK_HELPER])
     done()
   })
   test('getHelpers function on close position', async (done) => {
-    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]'
-    const latitude = 48.81903
-    const longitude = 2.41197
-    await addHelper(send_command, exponentPushToken, latitude, longitude)
+    await addHelper(send_command, MOCK_HELPER)
     // It's about 500 meters away
     let helpers = await getHelpers(send_command, 48.81697, 2.40658)
-    expect(helpers).toStrictEqual([{
-      latitude: 48.81697,
-      longitude: 2.40658,
-      token: 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]',
-    }])
+    expect(helpers).toStrictEqual([MOCK_HELPER])
     // 400 meters is too short
     helpers = await getHelpers(send_command, 48.81697, 2.40658, 400)
     expect(helpers).toStrictEqual([])
     done()
   })
   test('getHelpers function too far', async (done) => {
-    const exponentPushToken = 'ExponentPushToken[VKwxROOrqdRmu5OtXdpgoJ]'
-    const latitude = 48.81903
-    const longitude = 2.41197
-    await addHelper(send_command, exponentPushToken, latitude, longitude)
-    const helpers = await getHelpers(send_command, 12.11111, longitude)
+    await addHelper(send_command, MOCK_HELPER)
+    const helpers = await getHelpers(send_command, 12.11111, 12.11111)
     expect(helpers).toStrictEqual([])
     done()
   })
   test('convertPushTokenListToMessageObject', () => {
-    const messageObject = convertPushTokenListToMessageObject(MOCK_HELPERS, MOCK_MESSAGE)
+    const messageObject = convertPushTokenListToMessageObject(MOCK_HELPERS, MOCK_HELPEE)
     expect(messageObject).toStrictEqual([{
       'body': 'world',
       'title': 'hello',
@@ -208,10 +189,10 @@ describe('server test', () => {
       status: 200,
     })
     let onFulfilled = sinon.spy()
-    notifyHelpers(MOCK_HELPERS, MOCK_MESSAGE).then(onFulfilled)
+    notifyHelpers(MOCK_HELPERS, MOCK_HELPEE).then(onFulfilled)
     moxios.wait(function () {
       expect(onFulfilled.called).toBe(true)
-      expect(JSON.parse(onFulfilled.getCall(0).args[0].config.data)).toStrictEqual(convertPushTokenListToMessageObject(MOCK_HELPERS, MOCK_MESSAGE))
+      expect(JSON.parse(onFulfilled.getCall(0).args[0].config.data)).toStrictEqual(convertPushTokenListToMessageObject(MOCK_HELPERS, MOCK_HELPEE))
       expect(onFulfilled.getCall(0).args[0].config.headers['Content-Type']).toBe('application/json')
       done()
     })
@@ -247,7 +228,7 @@ describe('server test', () => {
     expect(response.statusCode).toBe(200)
     moxios.wait(function () {
       const request = moxios.requests.mostRecent()
-      expect(JSON.parse(request.config.data)).toStrictEqual(convertPushTokenListToMessageObject([MOCK_HELPERS[0]], MOCK_MESSAGE))
+      expect(JSON.parse(request.config.data)).toStrictEqual(convertPushTokenListToMessageObject([MOCK_HELPERS[0]], MOCK_HELPEE))
       expect(request.config.headers['Content-Type']).toBe('application/json')
       done()
     })

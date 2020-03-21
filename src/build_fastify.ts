@@ -9,6 +9,8 @@ import util from 'util'
 import {notifyHelpers} from './notify_helpers'
 import fs from 'fs'
 import path from 'path'
+import {Helpee} from './Helpee'
+import {Helper} from './helper'
 
 export function buildFastify(): FastifyInstance {
   // Require the server framework and instantiate it
@@ -33,7 +35,12 @@ export function buildFastify(): FastifyInstance {
     },
   }, async (request, reply) => {
     console.log('Adding helper', request.body);
-    await addHelper(send_command, request.body[EXPONENT_PUSH_TOKEN], request.body[LATITUDE], request.body[LONGITUDE]);
+    const helper: Helper = {
+      exponentPushToken: request.body[EXPONENT_PUSH_TOKEN],
+      latitude: request.body[LATITUDE],
+      longitude: request.body[LONGITUDE]
+    }
+    await addHelper(send_command, helper);
     reply.code(200).send();
   });
 
@@ -60,13 +67,23 @@ export function buildFastify(): FastifyInstance {
       body: helpeeRouteBodySchema,
     },
   }, async (request, reply) => {
-    const helpers = await getHelpers(send_command, request.body[LATITUDE], request.body[LONGITUDE]);
-    await notifyHelpers(helpers, request.body[MESSAGE]);
+    const helpee: Helpee = {
+      latitude: request.body[LATITUDE],
+      longitude: request.body[LONGITUDE],
+      message: request.body[MESSAGE]
+    }
+    const helpers = await getHelpers(send_command, helpee.latitude, helpee.longitude);
+    await notifyHelpers(helpers, helpee);
     reply.code(200).send();
   });
 
   server.addHook('onClose', async (instance, done) => {
     await tile38Client.quit()
+    done()
+  })
+
+  server.addHook('onRequest', (request, reply, done) => {
+    console.log(request)
     done()
   })
 

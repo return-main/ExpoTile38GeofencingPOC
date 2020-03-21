@@ -37,11 +37,11 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = require("./constants");
-function deleteHelper(send_command, id) {
+function deleteHelper(send_command, token) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, send_command('DEL', [constants_1.HELPERS, id])];
+                case 0: return [4 /*yield*/, send_command('DEL', [constants_1.HELPERS, token])];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];

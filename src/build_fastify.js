@@ -66,11 +66,17 @@ function buildFastify() {
             body: helpersRouteBodySchema,
         },
     }, function (request, reply) { return __awaiter(_this, void 0, void 0, function () {
+        var helper;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     console.log('Adding helper', request.body);
-                    return [4 /*yield*/, add_helper_1.addHelper(send_command, request.body[constants_1.EXPONENT_PUSH_TOKEN], request.body[constants_1.LATITUDE], request.body[constants_1.LONGITUDE])];
+                    helper = {
+                        exponentPushToken: request.body[constants_1.EXPONENT_PUSH_TOKEN],
+                        latitude: request.body[constants_1.LATITUDE],
+                        longitude: request.body[constants_1.LONGITUDE]
+                    };
+                    return [4 /*yield*/, add_helper_1.addHelper(send_command, helper)];
                 case 1:
                     _a.sent();
                     reply.code(200).send();
@@ -108,13 +114,19 @@ function buildFastify() {
             body: helpeeRouteBodySchema,
         },
     }, function (request, reply) { return __awaiter(_this, void 0, void 0, function () {
-        var helpers;
+        var helpee, helpers;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, get_helpers_1.getHelpers(send_command, request.body[constants_1.LATITUDE], request.body[constants_1.LONGITUDE])];
+                case 0:
+                    helpee = {
+                        latitude: request.body[constants_1.LATITUDE],
+                        longitude: request.body[constants_1.LONGITUDE],
+                        message: request.body[constants_1.MESSAGE]
+                    };
+                    return [4 /*yield*/, get_helpers_1.getHelpers(send_command, helpee.latitude, helpee.longitude)];
                 case 1:
                     helpers = _a.sent();
-                    return [4 /*yield*/, notify_helpers_1.notifyHelpers(helpers, request.body[constants_1.MESSAGE])];
+                    return [4 /*yield*/, notify_helpers_1.notifyHelpers(helpers, helpee)];
                 case 2:
                     _a.sent();
                     reply.code(200).send();
@@ -133,6 +145,10 @@ function buildFastify() {
             }
         });
     }); });
+    server.addHook('onRequest', function (request, reply, done) {
+        console.log(request);
+        done();
+    });
     return server;
 }
 exports.buildFastify = buildFastify;

@@ -42,13 +42,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = __importDefault(require("axios"));
 var convert_push_token_list_to_message_object_1 = require("./convert_push_token_list_to_message_object");
 /// Takes a list of ExponentPushToken and sends push notifications to them
-function notifyHelpers(helpers, message) {
+function notifyHelpers(helpers, helpee) {
     return __awaiter(this, void 0, void 0, function () {
         var body;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    body = convert_push_token_list_to_message_object_1.convertPushTokenListToMessageObject(helpers, message);
+                    body = convert_push_token_list_to_message_object_1.convertPushTokenListToMessageObject(helpers, helpee);
                     return [4 /*yield*/, axios_1.default.post('https://exp.host/--/api/v2/push/send', body, { headers: {
                                 'Content-Type': 'application/json'
                             } })];

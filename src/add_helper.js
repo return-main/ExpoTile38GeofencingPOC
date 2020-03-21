@@ -37,18 +37,18 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = require("./constants");
-function addHelper(send_command, id, latitude, longitude, expiration) {
+function addHelper(send_command, helper, expiration) {
     if (expiration === void 0) { expiration = 60; }
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, send_command('SET', [constants_1.HELPERS, id, 'POINT', latitude, longitude])
+                case 0: return [4 /*yield*/, send_command('SET', [constants_1.HELPERS, helper.exponentPushToken, 'POINT', helper.latitude, helper.longitude])
                     // Expire the helper after 1 minute
                 ];
                 case 1:
                     _a.sent();
                     // Expire the helper after 1 minute
-                    return [4 /*yield*/, send_command('EXPIRE', [constants_1.HELPERS, id, expiration])];
+                    return [4 /*yield*/, send_command('EXPIRE', [constants_1.HELPERS, helper.exponentPushToken, expiration])];
                 case 2:
                     // Expire the helper after 1 minute
                     _a.sent();

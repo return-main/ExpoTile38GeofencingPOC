@@ -37,6 +37,15 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var constants_1 = require("./constants");
+function arrayToHelper(array) {
+    var token = array[0];
+    var point = JSON.parse(array[1]);
+    return ({
+        exponentPushToken: token,
+        latitude: point.coordinates[1],
+        longitude: point.coordinates[0],
+    });
+}
 function getHelpers(send_command, latitude, longitude, radius) {
     if (radius === void 0) { radius = 500; }
     return __awaiter(this, void 0, void 0, function () {
@@ -46,7 +55,7 @@ function getHelpers(send_command, latitude, longitude, radius) {
                 case 0: return [4 /*yield*/, send_command('NEARBY', [constants_1.HELPERS, 'POINT', latitude, longitude, radius])];
                 case 1:
                     reply = _a.sent();
-                    return [2 /*return*/, reply[1].map(function (array) { return ({ token: array[0], latitude: latitude, longitude: longitude }); })];
+                    return [2 /*return*/, reply[1].map(arrayToHelper)];
             }
         });
     });

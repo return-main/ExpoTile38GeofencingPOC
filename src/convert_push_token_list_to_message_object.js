@@ -1,13 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function convertPushTokenListToMessageObject(helpers, message) {
+function convertPushTokenListToMessageObject(helpers, helpee) {
     return helpers.map(function (helper) { return ({
-        to: helper.token,
+        to: helper.exponentPushToken,
         title: 'Demande d\'aide !',
-        body: message,
+        body: helpee.message,
         data: {
-            latitude: helper.latitude,
-            longitude: helper.longitude
+            latitude: helpee.latitude,
+            longitude: helpee.longitude
         },
     }); });
 }

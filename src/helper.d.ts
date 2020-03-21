@@ -1,5 +1,5 @@
 export interface Helper {
-  token: string;
+  exponentPushToken: string;
   latitude: number;
   longitude: number;
 }
