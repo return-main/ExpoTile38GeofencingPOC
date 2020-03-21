@@ -40,19 +40,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var axios_1 = __importDefault(require("axios"));
-var convert_push_token_list_to_message_object_1 = require("./convert_push_token_list_to_message_object");
-/// Takes a list of ExponentPushToken and sends push notifications to them
+var create_expo_push_messages_1 = require("./create_expo_push_messages");
+var expo_server_sdk_1 = require("expo-server-sdk");
+/// Takes a list of Helpers and the data of the Helpee and sends push notifications to them
 function notifyHelpers(helpers, helpee) {
     return __awaiter(this, void 0, void 0, function () {
-        var body;
+        var messages, expo, chunks, _i, chunks_1, chunk;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    body = convert_push_token_list_to_message_object_1.convertPushTokenListToMessageObject(helpers, helpee);
-                    return [4 /*yield*/, axios_1.default.post('https://exp.host/--/api/v2/push/send', body, { headers: {
+                    messages = create_expo_push_messages_1.createExpoPushMessages(helpers, helpee);
+                    expo = new expo_server_sdk_1.Expo();
+                    chunks = expo.chunkPushNotifications(messages);
+                    _i = 0, chunks_1 = chunks;
+                    _a.label = 1;
+                case 1:
+                    if (!(_i < chunks_1.length)) return [3 /*break*/, 4];
+                    chunk = chunks_1[_i];
+                    return [4 /*yield*/, axios_1.default.post('https://exp.host/--/api/v2/push/send', chunk, {
+                            headers: {
                                 'Content-Type': 'application/json'
-                            } })];
-                case 1: return [2 /*return*/, _a.sent()];
+                            }
+                        })];
+                case 2:
+                    _a.sent();
+                    _a.label = 3;
+                case 3:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 4: return [2 /*return*/];
             }
         });
     });

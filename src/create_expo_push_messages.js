@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function convertPushTokenListToMessageObject(helpers, helpee) {
+function createExpoPushMessages(helpers, helpee) {
     return helpers.map(function (helper) { return ({
         to: helper.exponentPushToken,
         title: 'Demande d\'aide !',
@@ -11,4 +11,4 @@ function convertPushTokenListToMessageObject(helpers, helpee) {
         },
     }); });
 }
-exports.convertPushTokenListToMessageObject = convertPushTokenListToMessageObject;
+exports.createExpoPushMessages = createExpoPushMessages;

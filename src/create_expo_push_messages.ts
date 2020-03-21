@@ -4,7 +4,7 @@ import {ExpoPushMessage} from 'expo-server-sdk'
 import {Helper} from './helper'
 import {Helpee} from './Helpee'
 
-export function convertPushTokenListToMessageObject(helpers: Helper[], helpee: Helpee): ExpoPushMessage[]{
+export function createExpoPushMessages(helpers: Helper[], helpee: Helpee): ExpoPushMessage[]{
   return helpers.map(helper => ({
     to: helper.exponentPushToken,
     title: 'Demande d\'aide !',

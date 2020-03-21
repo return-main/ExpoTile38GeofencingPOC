@@ -4,7 +4,7 @@ import Redis from 'redis'
 import util from 'util'
 import {addHelper} from '../add_helper'
 import {getHelpers} from '../get_helpers'
-import {convertPushTokenListToMessageObject} from '../convert_push_token_list_to_message_object'
+import {createExpoPushMessages} from '../create_expo_push_messages'
 import {notifyHelpers} from '../notify_helpers'
 import moxios from 'moxios'
 import sinon from 'sinon'
@@ -207,19 +207,18 @@ describe('server test', () => {
     done()
   })
   test('convertPushTokenListToMessageObject', () => {
-    const messageObject = convertPushTokenListToMessageObject(MOCK_HELPERS, MOCK_HELPEE)
+    const messageObject = createExpoPushMessages(MOCK_HELPERS, MOCK_HELPEE)
     expect(messageObject).toStrictEqual(MOCK_EXPO_PUSH_MESSAGES)
   })
-  test('notifyHelpers', (done) => {
+  test('notifyHelpers', async (done) => {
     moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
       status: 200,
     })
-    let onFulfilled = sinon.spy()
-    notifyHelpers(MOCK_HELPERS, MOCK_HELPEE).then(onFulfilled)
+    await notifyHelpers(MOCK_HELPERS, MOCK_HELPEE)
     moxios.wait(function () {
-      expect(onFulfilled.called).toBe(true)
-      expect(JSON.parse(onFulfilled.getCall(0).args[0].config.data)).toStrictEqual(convertPushTokenListToMessageObject(MOCK_HELPERS, MOCK_HELPEE))
-      expect(onFulfilled.getCall(0).args[0].config.headers['Content-Type']).toBe('application/json')
+      const request = moxios.requests.mostRecent()
+      expect(JSON.parse(request.config.data)).toStrictEqual(createExpoPushMessages(MOCK_HELPERS, MOCK_HELPEE))
+      expect(request.config.headers['Content-Type']).toBe('application/json')
       done()
     })
   })
@@ -257,7 +256,7 @@ describe('server test', () => {
     expect(JSON.parse(response.body).notifiedCount).toBe(1)
     moxios.wait(function () {
       const request = moxios.requests.mostRecent()
-      expect(JSON.parse(request.config.data)).toStrictEqual(convertPushTokenListToMessageObject([MOCK_HELPERS[0]], MOCK_HELPEE))
+      expect(JSON.parse(request.config.data)).toStrictEqual(createExpoPushMessages([MOCK_HELPERS[0]], MOCK_HELPEE))
       expect(request.config.headers['Content-Type']).toBe('application/json')
       done()
     })
@@ -296,9 +295,8 @@ describe('server test', () => {
     expect(JSON.parse(response.body).notifiedCount).toBe(0)
     moxios.wait(function () {
       const request = moxios.requests.mostRecent()
-      // notifies 0 people
-      expect(JSON.parse(request.config.data)).toStrictEqual([])
-      expect(request.config.headers['Content-Type']).toBe('application/json')
+      // Should not call the stub because nobody is notified
+      expect(request).toStrictEqual(undefined)
       done()
     })
   })
