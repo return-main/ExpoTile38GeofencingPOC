@@ -1,0 +1,15 @@
+version: '3.7'
+services:
+
+  server:
+    build: .
+    command: npm run test
+    ports:
+      - 3000:3000
+    depends_on:
+      - tile38
+
+  tile38:
+    image: tile38/tile38
+    container_name: tile38
+    restart: unless-stopped

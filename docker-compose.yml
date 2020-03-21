@@ -4,9 +4,6 @@ services:
   server:
     build: .
     command: npm run start
-    volumes:
-      - .:/usr/server/
-      - /usr/server/node_modules
     ports:
       - 3000:3000
     depends_on:
