@@ -1,8 +1,8 @@
 import fastify, {FastifyInstance} from 'fastify'
+import {deleteHelper} from './delete_helper'
 const {EXPONENT_PUSH_TOKEN, LATITUDE, LONGITUDE, MESSAGE} = require('./constants');
 const FluentSchema = require('fluent-schema');
 const addHelper = require('./add_helper');
-const deleteHelper = require('./delete_helper');
 const getHelpers = require('./get_helpers');
 const Redis = require("redis");
 const util = require('util');
@@ -20,7 +20,7 @@ export function buildFastify(): FastifyInstance {
 	  // }
   });
   const tile38Client = Redis.createClient(9851, process.env.DOCKER ? "tile38" : "localhost");
-  const send_command = util.promisify(tile38Client.send_command).bind(tile38Client);
+  const send_command: (command: string, args?: any[]) => Promise<any> = util.promisify(tile38Client.send_command).bind(tile38Client);
 
   const helpersRouteBodySchema = FluentSchema.object()
     .prop(EXPONENT_PUSH_TOKEN, FluentSchema.string()).required()
@@ -46,7 +46,7 @@ export function buildFastify(): FastifyInstance {
     },
   }, async (request, reply) => {
     console.log('Deleting helper', request.body);
-    await deleteHelper(send_command, request.body[EXPONENT_PUSH_TOKEN]);
+    await deleteHelper(send_command, request.body[EXPONENT_PUSH_TOKEN])
     reply.code(200).send();
   });
 

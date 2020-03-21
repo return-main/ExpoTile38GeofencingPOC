@@ -1,9 +1,9 @@
 import {buildFastify} from '../build_fastify'
+import { deleteHelper } from '../delete_helper';
 const {HELPERS} = require('../constants');
 const Redis = require('redis');
 const util = require('util');
 const addHelper = require('../add_helper');
-const deleteHelper = require('../delete_helper');
 const getHelpers = require('../get_helpers');
 const convertPushTokenListToMessageObject = require('../convert_push_token_list_to_message_object');
 const notifyHelpers = require('../notify_helpers');
