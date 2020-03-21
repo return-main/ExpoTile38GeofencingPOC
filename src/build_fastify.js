@@ -145,10 +145,6 @@ function buildFastify() {
             }
         });
     }); });
-    server.addHook('onRequest', function (request, reply, done) {
-        console.log(request);
-        done();
-    });
     return server;
 }
 exports.buildFastify = buildFastify;

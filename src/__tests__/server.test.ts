@@ -231,7 +231,7 @@ describe('server test', () => {
     })
 
     /// Ask for help less than 500 meters away
-    await moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
+    moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
       status: 200,
     })
     response = await fastify.inject({
@@ -240,6 +240,7 @@ describe('server test', () => {
       payload: {
         latitude: 48.81697,
         longitude: 2.40658,
+        message: MOCK_MESSAGE
       },
     })
     expect(response.statusCode).toBe(200)
@@ -267,16 +268,16 @@ describe('server test', () => {
     })
 
     /// Ask for help more than 500 meters away
-    await moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
+    moxios.stubOnce('POST', 'https://exp.host/--/api/v2/push/send', {
       status: 200,
     })
     response = await fastify.inject({
       method: 'POST',
       url: '/helpee',
       payload: {
-        message: MOCK_MESSAGE,
         latitude: 48.8584,
         longitude: 2.2945,
+        message: MOCK_MESSAGE,
       },
     })
     expect(response.statusCode).toBe(200)

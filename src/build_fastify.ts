@@ -82,10 +82,5 @@ export function buildFastify(): FastifyInstance {
     done()
   })
 
-  server.addHook('onRequest', (request, reply, done) => {
-    console.log(request)
-    done()
-  })
-
   return server;
 }
