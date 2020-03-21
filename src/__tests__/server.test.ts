@@ -12,6 +12,7 @@ import {HELPERS} from '../constants'
 import {Helper} from '../helper'
 import {Helpee} from '../Helpee'
 import {ExpoPushMessage} from 'expo-server-sdk'
+import 'jest-extended'
 
 describe('server test', () => {
   const fastify = buildFastify()
@@ -195,6 +196,14 @@ describe('server test', () => {
     await addHelper(send_command, MOCK_HELPER)
     const helpers = await getHelpers(send_command, 12.11111, 12.11111)
     expect(helpers).toStrictEqual([])
+    done()
+  })
+  test('getHelpers on multiple helpers', async (done) => {
+    await Promise.all(MOCK_HELPERS.map(async helper => {
+      await addHelper(send_command, helper)
+    }))
+    const helpers = await getHelpers(send_command, 48.81697, 2.40658, 10000)
+    expect(helpers).toIncludeAllMembers(MOCK_HELPERS)
     done()
   })
   test('convertPushTokenListToMessageObject', () => {
