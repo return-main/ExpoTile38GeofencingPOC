@@ -4,7 +4,12 @@ import {Helper} from './helper'
 import {Helpee} from './Helpee'
 import { Expo } from 'expo-server-sdk';
 
-/// Takes a list of Helpers and the data of the Helpee and sends push notifications to them
+/**
+ * Prends une liste d'assistants à proximité en parametre, ainsi que les donnees fournis par le demandeur d'aide
+ * Envoie une notification push à tous les assistants de cette liste
+ * @param helpers
+ * @param helpee
+ */
 export async function notifyHelpers(helpers: Helper[], helpee: Helpee) {
   const messages = createExpoPushMessages(helpers, helpee);
   // The Expo push notification service accepts batches of notifications so

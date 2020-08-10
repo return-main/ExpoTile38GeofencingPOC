@@ -12,6 +12,9 @@ import path from 'path'
 import {Helpee} from './Helpee'
 import {Helper} from './helper'
 
+/**
+ * Genere un serveur avec fastify
+ */
 export function buildFastify(): FastifyInstance {
   // Require the server framework and instantiate it
   const server = fastify({

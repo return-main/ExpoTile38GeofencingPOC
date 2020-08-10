@@ -1,11 +1,21 @@
-/// Category name for tile38
+/**
+ * Categorie utilisée dans tile38
+ */
 export const HELPERS = 'helpers';
 
-// Used as keys in JSON Bodies
+/**
+ * Utilisé comme clef dans le body JSON des requetes API
+ */
 export const EXPONENT_PUSH_TOKEN = 'exponentPushToken';
-// Used as keys in JSON Bodies
+/**
+ * Utilisé comme clef dans le body JSON des requetes API
+ */
 export const LATITUDE = 'latitude';
-// Used as keys in JSON Bodies
+/**
+ * Utilisé comme clef dans le body JSON des requetes API
+ */
 export const LONGITUDE = 'longitude';
-// Used as keys in JSON Bodies
+/**
+ * Utilisé comme clef dans le body JSON des requetes API
+ */
 export const MESSAGE = 'message';
