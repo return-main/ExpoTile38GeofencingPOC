@@ -14,7 +14,12 @@ OR
 mpm install
 npm run start
 ```
-
+#How to contribute
+The code is in TypeScript, so you have to transpile it to JavaScript before running it
+To do that, please run
+```bash
+npm run tsc
+```
 #Tile38 Commands:
 - https://tile38.com/commands/set/
 - https://tile38.com/commands/expire/
