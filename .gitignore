@@ -116,3 +116,5 @@ data/queue.db
 
 # Idea Ultimate
 .idea
+
+.DS_Store
